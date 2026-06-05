@@ -160,6 +160,17 @@
         
         <!-- 1. MONTHLY VIEW -->
         <section id="view-section-monthly" class="view-section flex-1 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+            <!-- Calendar Legend & Month Title -->
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-bold text-indigo-900" id="monthlyCalendarTitle">2026년 6월 업무 캘린더</span>
+                </div>
+                <div class="flex items-center gap-3 text-[10px] font-semibold text-slate-400">
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-red-500"></span>공휴일/일요일</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-blue-500"></span>토요일</span>
+                    <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-indigo-600"></span>오늘</span>
+                </div>
+            </div>
             <!-- Calendar Grid Header -->
             <div class="grid grid-cols-7 gap-2 mb-4 text-center font-bold text-xs text-slate-400 uppercase tracking-wider">
                 <div class="text-red-500 py-1">일</div>
@@ -849,7 +860,7 @@
         { id: 'bi-3', unit: '복지시설도우미', name: '상반기 보건/위생 마스크 및 개인 수건', allocated: 500000, used: 500000 },
         { id: 'bi-4', unit: '청결케어서비스', name: '다목적 방역 분무기 및 세척 알코올 액상 소모품', allocated: 2000000, used: 1850000 },
         { id: 'bi-5', unit: '청결케어서비스', name: '참여자 간담회 음료 및 격려 다과 대금', allocated: 400000, used: 400000 },
-        { id: 'bi-6', unit: '손길나눔공방', name: '천연 가죽 원단 및 코튼 안감 패브릭 벌크 구매', allocated: 5000000, used: 4800000 },
+        { id: 'bi-6', text: '손길나눔공방', name: '천연 가죽 원단 및 코튼 안감 패브릭 벌크 구매', allocated: 5000000, used: 4800000 },
         { id: 'bi-7', unit: '손길나눔공방', name: '공방 전용 미싱기 모터 정밀 부품 교체 수리비', allocated: 1500000, used: 1300000 }
     ];
 
@@ -866,6 +877,31 @@
         '손길나눔공방': { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', dot: 'bg-orange-500' },
         '공통행정': { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-800', dot: 'bg-purple-500' },
         '개인교육': { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', dot: 'bg-rose-500' }
+    };
+
+    // 2026 South Korean Public Holidays Database
+    const holidays2026 = {
+        '2026-01-01': '신정',
+        '2026-02-16': '설날연휴',
+        '2026-02-17': '설날',
+        '2026-02-18': '설날연휴',
+        '2026-03-01': '삼일절',
+        '2026-03-02': '대체공휴일',
+        '2026-05-05': '어린이날',
+        '2026-05-24': '부처님오신날',
+        '2026-05-25': '대체공휴일',
+        '2026-06-03': '지방선거',
+        '2026-06-06': '현충일',
+        '2026-07-17': '제헌절',
+        '2026-08-15': '광복절',
+        '2026-08-17': '대체공휴일',
+        '2026-09-24': '추석연휴',
+        '2026-09-25': '추석',
+        '2026-09-26': '추석연휴',
+        '2026-10-03': '개천절',
+        '2026-10-05': '대체공휴일',
+        '2026-10-09': '한글날',
+        '2026-12-25': '성탄절'
     };
 
     // ----------------------------------------------------
@@ -1163,6 +1199,12 @@
         const year = currentDate.getFullYear();
         const month = currentDate.getMonth();
 
+        // Update Title dynamically
+        const titleEl = document.getElementById('monthlyCalendarTitle');
+        if (titleEl) {
+            titleEl.innerText = `${year}년 ${month + 1}월 업무 캘린더`;
+        }
+
         const firstDayIndex = new Date(year, month, 1).getDay();
         const totalDays = new Date(year, month + 1, 0).getDate();
 
@@ -1182,19 +1224,26 @@
             const dayDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
             const isToday = dayDateStr === '2026-06-04'; // highlight system today date
             
+            // Check Korean 2026 public holidays
+            const holidayName = holidays2026[dayDateStr];
+            const isHoliday = !!holidayName;
+
             dayDiv.className = `bg-white border ${isToday ? 'border-indigo-600 ring-1 ring-indigo-600/30' : 'border-slate-200'} p-2 min-h-[100px] rounded-xl flex flex-col justify-between hover:bg-slate-50/50 transition-colors cursor-pointer`;
             dayDiv.setAttribute('onclick', `goToSpecificDay('${dayDateStr}')`);
 
-            // Calendar day cell header
+            // Calendar day cell header styling
             let dayTextClass = "font-bold text-xs ";
             const dayOfWeek = new Date(year, month, day).getDay();
-            if (dayOfWeek === 0) dayTextClass += "text-red-500";
+            if (dayOfWeek === 0 || isHoliday) dayTextClass += "text-red-500";
             else if (dayOfWeek === 6) dayTextClass += "text-blue-500";
             else dayTextClass += "text-slate-600";
 
             let headerHTML = `<div class="flex justify-between items-center mb-1">
-                <span class="${dayTextClass}">${day}</span>
-                ${isToday ? '<span class="bg-indigo-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold">오늘</span>' : ''}
+                <div class="flex items-center gap-1 overflow-hidden">
+                    <span class="${dayTextClass}">${day}</span>
+                    ${isHoliday ? `<span class="text-[9px] text-red-500 font-bold bg-red-50 px-1 rounded truncate max-w-[55px]" title="${holidayName}">${holidayName}</span>` : ''}
+                </div>
+                ${isToday ? '<span class="bg-indigo-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shrink-0">오늘</span>' : ''}
             </div>`;
 
             // Filtered events on this date
@@ -1258,17 +1307,27 @@
             const dateStr = getYYYYMMDD(dayDate);
             const isToday = dateStr === '2026-06-04';
 
+            const holidayName = holidays2026[dateStr];
+            const isHoliday = !!holidayName;
+
             const col = document.createElement('div');
             col.className = `flex-1 min-h-[400px] bg-white rounded-2xl border ${isToday ? 'border-indigo-600 ring-2 ring-indigo-600/10' : 'border-slate-200'} p-4 flex flex-col shadow-sm`;
+
+            let dayNumClass = "text-sm font-bold ";
+            if (isHoliday) dayNumClass += "text-red-500";
+            else dayNumClass += "text-slate-800";
 
             // Column Header
             col.innerHTML = `
                 <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
-                    <div>
-                        <span class="text-xs text-slate-400 font-bold uppercase block">${daysLabel[i]}요일</span>
-                        <span class="text-sm font-bold text-slate-800">${dayDate.getMonth()+1}월 ${dayDate.getDate()}일</span>
+                    <div class="overflow-hidden">
+                        <span class="text-xs text-slate-400 font-bold uppercase block flex items-center gap-1">
+                            ${daysLabel[i]}요일
+                            ${isHoliday ? `<span class="text-[9px] text-red-500 bg-red-50 px-1.5 py-0.2 rounded font-bold shrink-0">${holidayName}</span>` : ''}
+                        </span>
+                        <span class="${dayNumClass}">${dayDate.getMonth()+1}월 ${dayDate.getDate()}일</span>
                     </div>
-                    ${isToday ? '<span class="bg-indigo-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold">오늘</span>' : ''}
+                    ${isToday ? '<span class="bg-indigo-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shrink-0">오늘</span>' : ''}
                 </div>
                 <div class="space-y-3 flex-1 overflow-y-auto" id="week-day-events-${dateStr}">
                     <!-- Days Events -->
@@ -1415,6 +1474,7 @@
         }
     }
 
+    // Checklist Input
     function addChecklistItem() {
         const text = prompt('오늘 달성해야 할 구체적인 업무 목표를 입력해 주세요:');
         if (!text || text.trim() === '') return;
