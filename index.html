@@ -51,7 +51,7 @@
             <button onclick="editWeatherAlert()" class="text-indigo-300 hover:text-white ml-2"><i class="fa-solid fa-pen text-[10px]"></i></button>
         </div>
         <div class="text-right text-xs text-indigo-100 hidden md:block">
-            <span class="font-semibold block" id="currentDateDisplay">2026년 6월 4일 목요일</span>
+            <span class="font-semibold block" id="currentDateDisplay">오늘 날짜 표시 중...</span>
             <span class="opacity-75">노인일자리팀 조은진 담당자</span>
         </div>
     </div>
@@ -120,7 +120,7 @@
 
         <hr class="border-slate-100">
 
-        <!-- D-Day & Quick Status (실시간 연동 & 최단 D-Day 2개 우선 표기) -->
+        <!-- D-Day & Quick Status -->
         <div class="mt-auto space-y-4">
             <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-4">
                 <div class="flex items-center gap-2 text-indigo-900 font-semibold text-xs mb-2">
@@ -128,7 +128,7 @@
                     <span>행정 및 시스템 마감일</span>
                 </div>
                 <div class="space-y-2.5 text-xs text-slate-600" id="sidebar-dday-list">
-                    <!-- JavaScript로 실시간 연동되어 최단 d-day 2건이 삽입됩니다 -->
+                    <!-- 실시간 연동되어 최단 d-day 2건이 삽입됩니다 -->
                 </div>
             </div>
             
@@ -163,7 +163,7 @@
             <!-- Calendar Legend & Month Title -->
             <div class="flex justify-between items-center mb-4 pb-2 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                    <span class="text-sm font-bold text-indigo-900" id="monthlyCalendarTitle">2026년 6월 업무 캘린더</span>
+                    <span class="text-sm font-bold text-indigo-900" id="monthlyCalendarTitle">업무 캘린더</span>
                 </div>
                 <div class="flex items-center gap-3 text-[10px] font-semibold text-slate-400">
                     <span class="flex items-center gap-1"><span class="w-2 h-2 rounded bg-red-500"></span>공휴일/일요일</span>
@@ -201,7 +201,7 @@
                 <div class="flex justify-between items-center mb-6">
                     <h4 class="font-bold text-slate-800 flex items-center gap-2">
                         <i class="fa-solid fa-clock-rotate-left text-indigo-600"></i>
-                        <span id="dailyDateTitle">2026-06-04 시간별 일정</span>
+                        <span id="dailyDateTitle">시간별 일정</span>
                     </h4>
                     <span class="text-xs bg-slate-100 text-slate-500 px-2.5 py-1 rounded-full" id="dailyTotalCount">일정 0건</span>
                 </div>
@@ -245,21 +245,34 @@
         <!-- 4. ADMIN & EDUCATION MANAGEMENT VIEW -->
         <section id="view-section-admin-edu" class="view-section hidden flex flex-col gap-6">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Left: Coordinator Education & Business Unit Safety Sessions -->
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                    <div class="flex justify-between items-center mb-6">
+                <!-- Left: Coordinator Education & Business Unit Safety Sessions (Sub-Tabbed UI) -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                    <div class="flex justify-between items-center mb-4">
                         <h4 class="font-bold text-slate-800 flex items-center gap-2 text-rose-600">
                             <i class="fa-solid fa-graduation-cap"></i>
-                            <span>일자리 및 담당자 필수 교육 대장</span>
+                            <span>일자리 교육 현황 관리</span>
                         </h4>
-                        <button onclick="openAddModal('edu_business')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs px-2.5 py-1 rounded-lg font-semibold"><i class="fa-solid fa-plus mr-1"></i>교육 일정 등록</button>
+                        <button onclick="openAddModal(activeEduTab === 'business' ? 'edu_business' : 'edu_personal')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs px-2.5 py-1 rounded-lg font-semibold">
+                            <i class="fa-solid fa-plus mr-1"></i>교육 일정 등록
+                        </button>
                     </div>
-                    <div class="space-y-4" id="educationListContainer">
+
+                    <!-- Sub-tabs to switch between Participant and Coordinator education -->
+                    <div class="bg-slate-100 p-1 rounded-xl flex gap-1 mb-4 shrink-0">
+                        <button onclick="switchEduTab('business')" id="edu-tab-business" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center">
+                            일자리 참여자 교육
+                        </button>
+                        <button onclick="switchEduTab('personal')" id="edu-tab-personal" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center">
+                            일자리 담당자 교육
+                        </button>
+                    </div>
+
+                    <div class="space-y-4 flex-1 overflow-y-auto" id="educationListContainer">
                         <!-- Education List Injected -->
                     </div>
                 </div>
 
-                <!-- Right: Common Administrative Deadlines (수정 가능 대장으로 개편) -->
+                <!-- Right: Common Administrative Deadlines -->
                 <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
                     <div class="flex justify-between items-center mb-6">
                         <h4 class="font-bold text-slate-800 flex items-center gap-2 text-purple-600">
@@ -272,7 +285,7 @@
                     <div class="space-y-5 flex-1">
                         <!-- System Deadlines Tasks -->
                         <div class="space-y-3">
-                            <h5 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">주요 연간 행정 업무 (더블 클릭 또는 편집 버튼을 통해 수정 가능)</h5>
+                            <h5 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">주요 연간 행정 업무 (더블 클릭 또는 우측 아이콘을 클릭해 편집)</h5>
                             <div class="space-y-2" id="adminDeadlinesList">
                                 <!-- Injected via JS -->
                             </div>
@@ -282,7 +295,7 @@
             </div>
         </section>
 
-        <!-- 5. BUDGET VIEW SECTION (Refined with dedicated Business Unit Tabs & Interactive Allocation Editing) -->
+        <!-- 5. BUDGET VIEW SECTION -->
         <section id="view-section-budget" class="view-section hidden flex flex-col gap-6">
             
             <!-- Business Unit Sub-Tabs Navigation inside Budget View -->
@@ -495,686 +508,347 @@
                         <input type="radio" name="event-status" value="예정" checked class="text-indigo-600 focus:ring-indigo-500"> 예정
                     </label>
                     <label class="inline-flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer">
-                        <input type="radio" name="event-status" value="진행중" class="text-indigo-600 focus:ring-indigo-500"> 진행중
-                    </label>
-                    <label class="inline-flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer">
                         <input type="radio" name="event-status" value="완료" class="text-indigo-600 focus:ring-indigo-500"> 완료
                     </label>
                 </div>
             </div>
 
-            <!-- Buttons -->
-            <div class="flex gap-2 pt-4 border-t border-slate-100 justify-end">
-                <button type="button" id="btn-delete" onclick="deleteSchedule()" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all mr-auto hidden">
-                    삭제
-                </button>
-                <button type="button" onclick="closeScheduleModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
-                    취소
-                </button>
-                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all">
-                    저장
-                </button>
+            <div class="pt-4 border-t border-slate-100 flex justify-between gap-3">
+                <button type="button" id="btn-delete-event" onclick="deleteSchedule()" class="hidden px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs rounded-xl transition-all">삭제</button>
+                <div class="flex gap-2 ml-auto">
+                    <button type="button" onclick="closeScheduleModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all">취소</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition-all">저장하기</button>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
-<!-- BUDGET ITEM MODAL: ADD / EDIT -->
-<div id="budgetModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-200">
-        <div class="bg-emerald-800 text-white p-5 flex justify-between items-center">
-            <h3 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-calculator"></i>
-                <span id="budgetModalTitle">예산 세부 품목 등록</span>
-            </h3>
-            <button onclick="closeBudgetModal()" class="text-white hover:text-emerald-200 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
+<!-- MODAL: WEATHER STATUS EDIT -->
+<div id="weatherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
+        <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-cloud-sun text-indigo-600 mr-2"></i>오늘의 기상/특이경보 수정</h3>
+        <p class="text-xs text-slate-400">메인 대시보드 우측 상단에 실시간으로 표시될 경보 멘트와 상태 등을 변경합니다.</p>
+        <div>
+            <label class="block text-xs font-bold text-slate-500 mb-1">알림 내용</label>
+            <input type="text" id="weather-alert-input" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
         </div>
-        <form id="budgetForm" onsubmit="saveBudgetItem(event)" class="p-6 space-y-4">
-            <input type="hidden" id="budget-item-id">
-            <input type="hidden" id="budget-item-unit">
-            
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">사업단 확인</label>
-                <input type="text" id="budget-item-unit-display" disabled class="w-full bg-slate-50 border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-500">
-            </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">품목명 *</label>
-                <input type="text" id="budget-item-name" required placeholder="예: 혹서기 안전 조끼 구입, 소모품 구매" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">집행 예산 (배정액) *</label>
-                    <input type="number" id="budget-item-allocated" required placeholder="₩" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">집행 완료 (사용액) *</label>
-                    <input type="number" id="budget-item-used" required placeholder="₩" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                </div>
-            </div>
-
-            <div class="flex gap-2 pt-4 border-t border-slate-100 justify-end">
-                <button type="button" id="btn-budget-delete" onclick="deleteBudgetItem()" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all mr-auto hidden">
-                    삭제
-                </button>
-                <button type="button" onclick="closeBudgetModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
-                    취소
-                </button>
-                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all">
-                    저장
-                </button>
-            </div>
-        </form>
+        <div>
+            <label class="block text-xs font-bold text-slate-500 mb-1">상태 구분</label>
+            <select id="weather-status-select" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="safe">양호 (정상 활동)</option>
+                <option value="caution">주의 (수시 모니터링)</option>
+                <option value="warning">위험 (실외 활동 제한 권고)</option>
+            </select>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+            <button onclick="closeWeatherModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
+            <button onclick="saveWeatherAlert()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg">적용</button>
+        </div>
     </div>
 </div>
 
-<!-- INCIDENT REGISTER MODAL -->
+<!-- MODAL: INCIDENT LOG -->
 <div id="incidentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-200">
-        <div class="bg-red-900 text-white p-5 flex justify-between items-center">
-            <h3 class="text-lg font-bold flex items-center gap-2">
-                <i class="fa-solid fa-kit-medical"></i>
-                <span>긴급 및 특이사항 신규 작성</span>
-            </h3>
-            <button onclick="closeIncidentModal()" class="text-white hover:text-red-200 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-        </div>
-        <form id="incidentForm" onsubmit="saveIncident(event)" class="p-6 space-y-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
+        <h3 class="text-lg font-bold text-red-600"><i class="fa-solid fa-kit-medical mr-2"></i>긴급 및 특이사항 등록</h3>
+        <form id="incidentForm" onsubmit="saveIncident(event)" class="space-y-3">
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">관련 사업단 *</label>
-                <select id="incident-unit" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                <label class="block text-xs font-bold text-slate-500 mb-1">관련 사업단</label>
+                <select id="incident-unit" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
                     <option value="복지시설도우미">복지시설도우미</option>
                     <option value="청결케어서비스">청결케어서비스</option>
                     <option value="손길나눔공방">손길나눔공방</option>
-                    <option value="공통행정">공통 행정</option>
+                    <option value="공통행정">공통행정</option>
                 </select>
             </div>
-
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">유형 *</label>
-                <select id="incident-type" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
-                    <option value="accident">안전사고 (부상 등)</option>
-                    <option value="complaint">민원 발생</option>
-                    <option value="weather">폭염/기상악화 조치</option>
-                    <option value="etc">기타 특이사항</option>
-                </select>
+                <label class="block text-xs font-bold text-slate-500 mb-1">일자 및 시각</label>
+                <input type="datetime-local" id="incident-time" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
             </div>
-
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">발생 시간 *</label>
-                <input type="time" id="incident-time" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                <label class="block text-xs font-bold text-slate-500 mb-1">내용 / 대처 방안</label>
+                <textarea id="incident-text" required rows="3" placeholder="예: 야외 정화 작업 중 참여자 어르신 미끄러짐으로 경미한 무릎 타박상 보건실 조치 및 귀가 완료" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
             </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">내용 및 조치 사항 *</label>
-                <textarea id="incident-text" rows="3" required placeholder="예: 무더위 쉼터 점검 중 참여자 어지럼증 발생하여 현장 그늘막 휴식 조치 및 수분 섭취 유도함." class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
-            </div>
-
-            <div class="flex gap-2 pt-4 border-t border-slate-100 justify-end">
-                <button type="button" onclick="closeIncidentModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
-                    취소
-                </button>
-                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all">
-                    사건 등록
-                </button>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeIncidentModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
+                <button type="submit" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-lg">등록하기</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- POPUP MODAL FOR WEATHER EDITING -->
-<div id="weatherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-200">
-        <div class="bg-indigo-900 text-white p-5 flex justify-between items-center">
-            <h3 class="text-sm font-bold flex items-center gap-2">
-                <i class="fa-solid fa-cloud-sun"></i>
-                <span>오늘의 기상 정보 및 행동 요령 설정</span>
-            </h3>
-            <button onclick="closeWeatherModal()" class="text-white hover:text-indigo-200 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-        </div>
-        <div class="p-6 space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">안내 메시지</label>
-                <input type="text" id="weatherInput" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">상태 위험수위</label>
-                <select id="weatherSeverity" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <option value="normal">양호 (정상 진행 - 녹색)</option>
-                    <option value="caution">주의 (수분 섭취 권고 - 주황색)</option>
-                    <option value="danger">위험 (야외활동 단축/실내 대체 - 적색)</option>
-                </select>
-            </div>
-            <div class="flex gap-2 justify-end pt-4 border-t border-slate-100">
-                <button onclick="closeWeatherModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-1.5 rounded-lg text-xs font-semibold">취소</button>
-                <button onclick="saveWeatherAlert()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold shadow">적용</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- UNIT BUDGET ALLOCATION DIRECT EDIT MODAL -->
-<div id="unitBudgetModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-200">
-        <div class="bg-indigo-900 text-white p-5 flex justify-between items-center">
-            <h3 class="text-sm font-bold flex items-center gap-2">
-                <i class="fa-solid fa-wallet"></i>
-                <span id="unitBudgetModalTitle">사업단 배정 예산 변경</span>
-            </h3>
-            <button onclick="closeUnitBudgetModal()" class="text-white hover:text-indigo-200 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-        </div>
-        <div class="p-6 space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">배정 예산 총액 (원)</label>
-                <input type="number" id="unitBudgetAllocatedInput" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            </div>
-            <p class="text-[10px] text-slate-400">배정 예산 총액을 기반으로 품목별 집행 현황과 잔액, 총 집행률이 유기적으로 재계산됩니다.</p>
-            <div class="flex gap-2 justify-end pt-4 border-t border-slate-100">
-                <button onclick="closeUnitBudgetModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-1.5 rounded-lg text-xs font-semibold">취소</button>
-                <button onclick="saveUnitBudgetModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-xs font-semibold shadow">적용</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- ADMIN DEADLINE NEW/EDIT MODAL -->
+<!-- MODAL: ADMIN DEADLINE -->
 <div id="adminDeadlineModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-200">
-        <div class="bg-purple-900 text-white p-5 flex justify-between items-center">
-            <h3 class="text-sm font-bold flex items-center gap-2">
-                <i class="fa-solid fa-clipboard-list"></i>
-                <span id="adminDeadlineModalTitle">연간 행정 일정 관리</span>
-            </h3>
-            <button onclick="closeAdminDeadlineModal()" class="text-white hover:text-purple-200 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-        </div>
-        <form id="adminDeadlineForm" onsubmit="saveAdminDeadline(event)" class="p-6 space-y-4">
-            <input type="hidden" id="deadline-id">
-            
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
+        <h3 class="text-lg font-bold text-purple-700"><i class="fa-solid fa-clipboard-list mr-2"></i>공통 연간 행정 일정 추가</h3>
+        <form id="adminDeadlineForm" onsubmit="saveAdminDeadline(event)" class="space-y-3">
+            <input type="hidden" id="admin-deadline-id">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">행정 업무명 *</label>
+                <input type="text" id="admin-deadline-title" required placeholder="예: 2분기 간담회 보고서 마감" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">마감 기한일 *</label>
+                <input type="date" id="admin-deadline-date" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">비고 및 세부 조건</label>
+                <input type="text" id="admin-deadline-notes" placeholder="예: 시스템 업로드 필수" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+            </div>
+            <div class="flex justify-end gap-2 pt-2">
+                <button type="button" onclick="closeAdminDeadlineModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
+                <button type="submit" class="px-4 py-2 bg-purple-600 text-white text-xs font-semibold rounded-lg">저장</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL: BUDGET ITEM -->
+<div id="budgetItemModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
+        <h3 class="text-lg font-bold text-emerald-700"><i class="fa-solid fa-coins mr-2"></i>예산 상세 품목 관리</h3>
+        <form id="budgetItemForm" onsubmit="saveBudgetItem(event)" class="space-y-3">
+            <input type="hidden" id="budget-item-id">
+            <input type="hidden" id="budget-item-unit">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">사업단</label>
+                <input type="text" id="budget-item-unit-display" disabled class="w-full bg-slate-100 border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-500">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">예산 품목명 *</label>
+                <input type="text" id="budget-item-name" required placeholder="예: 참여자 보수 교육 강사료, 홍보 물품 구입" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+            </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">해당 시기 (달/구분) *</label>
-                    <input type="text" id="deadline-month" required placeholder="예: 6월, 매월, 10월" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">집행 배정 예산 (원) *</label>
+                    <input type="number" id="budget-item-allocated" required placeholder="0" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">마감 기준일자 (선택) *</label>
-                    <input type="date" id="deadline-specific-date" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">집행 완료 금액 (원)</label>
+                    <input type="number" id="budget-item-used" placeholder="0" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
                 </div>
             </div>
-
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">행정 세부 업무 및 마감 지침 내용 *</label>
-                <textarea id="deadline-text" required rows="3" placeholder="예: 상반기 일자리 실적 결산 및 보건복지부 대외 공문 발송 마감" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"></textarea>
-            </div>
-
-            <p class="text-[10px] text-slate-400">마감 기준일자를 명확하게 기입하시면, 좌측 메인 사이드바 '행정 및 시스템 마감일'에 D-Day 연동이 자동 반영됩니다.</p>
-
-            <div class="flex gap-2 pt-4 border-t border-slate-100 justify-end">
-                <button type="button" id="btn-deadline-delete" onclick="deleteAdminDeadline()" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all mr-auto hidden">
-                    삭제
-                </button>
-                <button type="button" onclick="closeAdminDeadlineModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all">
-                    취소
-                </button>
-                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2.5 rounded-xl text-sm font-semibold shadow-md transition-all">
-                    저장
-                </button>
+            <div class="flex justify-between gap-2 pt-2">
+                <button type="button" id="btn-delete-budget-item" onclick="deleteBudgetItem()" class="hidden px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs rounded-xl transition-all">삭제</button>
+                <div class="flex gap-2 ml-auto">
+                    <button type="button" onclick="closeBudgetItemModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
+                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg">품목 적용</button>
+                </div>
             </div>
         </form>
     </div>
 </div>
 
-<footer class="bg-slate-100 border-t border-slate-200 text-center py-4 text-xs text-slate-400 mt-auto">
-    &copy; 2026 정읍시노인복지관. All Rights Reserved. 업무 효율 극대화를 위한 전용 인트라넷 시스템.
-</footer>
+<!-- MODAL: UNIT TOTAL BUDGET EDIT -->
+<div id="unitBudgetTotalModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
+        <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-wallet text-indigo-600 mr-2"></i>사업단 배정 예산 총액 변경</h3>
+        <p class="text-xs text-slate-400">품목 배정과 무관한 사업단 자체의 연간 총 예산 설정 한도를 제어합니다.</p>
+        <div>
+            <label class="block text-xs font-bold text-slate-500 mb-1">대상 사업단</label>
+            <input type="text" id="unit-budget-target-unit" disabled class="w-full bg-slate-100 border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-500">
+        </div>
+        <div>
+            <label class="block text-xs font-bold text-slate-500 mb-1">연간 총 배정 예산액 (원)</label>
+            <input type="number" id="unit-budget-total-input" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+            <button onclick="closeUnitBudgetTotalModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
+            <button onclick="saveUnitBudgetTotal()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg">변경 사항 적용</button>
+        </div>
+    </div>
+</div>
 
-<!-- Application Logic and Scripts -->
+<!-- CUSTOM CONFIRMATION MODAL -->
+<div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
+        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-circle-question text-amber-500"></i>
+            <span id="confirmTitle">확인</span>
+        </h3>
+        <p class="text-xs text-slate-500 leading-relaxed" id="confirmMessage">이 작업을 정말 진행하시겠습니까?</p>
+        <div class="flex justify-end gap-2 pt-2">
+            <button id="confirmCancelBtn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-all">취소</button>
+            <button id="confirmOkBtn" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg transition-all">확인</button>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript Core Logic -->
 <script>
     // ----------------------------------------------------
-    // 1. STATE & DATA INITIALIZATION
+    // Helper: Get Live System Today Date String (YYYY-MM-DD)
+    // ----------------------------------------------------
+    function getTodayDateString() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    // ----------------------------------------------------
+    // 1. Initial State Data (Synced with live system clock)
     // ----------------------------------------------------
     let currentView = 'monthly';
-    let currentDate = new Date(2026, 5, 4); // June 4, 2026 as default base date
-    let selectedUnitFilter = null; // null represents 'All'
-    let activeBudgetTab = '복지시설도우미';
+    
+    // Initialize starting variables directly from computer system clock
+    let currentSelectedDate = getTodayDateString(); 
+    const systemDateObj = new Date();
+    let currentYear = systemDateObj.getFullYear();
+    let currentMonth = systemDateObj.getMonth() + 1;
+    
+    let activeUnitFilter = null;
+    let activeBudgetUnit = '복지시설도우미';
+    let activeEduTab = 'business'; // 'business' (참여자 교육), 'personal' (담당자 교육)
 
-    // Mock initial events database
-    let events = [
-        {
-            id: 'evt-1',
-            unit: '복지시설도우미',
-            type: 'work',
-            title: '복지시설도우미 실외 활동자 안전 장비 일제 검수',
-            date: '2026-06-04',
-            start: '09:30',
-            end: '11:30',
-            location: '복지관 본관 소강당 및 앞마당',
-            target: '실외 참여 어르신 40명',
-            notes: '혹서기 대비 쿨토시, 안전조끼 배포 및 착용 안전 수칙 준수 서명 진행.',
-            status: '완료'
-        },
-        {
-            id: 'evt-2',
-            unit: '청결케어서비스',
-            type: 'edu_business',
-            title: '청결케어서비스 참여자 감염병 대비 위생 소양 교육',
-            date: '2026-06-04',
-            start: '14:00',
-            end: '16:00',
-            location: '정읍시 복합체육관 다목적실',
-            target: '청결케어 참여자 전체 (30명)',
-            notes: '손 씻기 6단계, 마스크 의무 착용 지침 전달.',
-            status: '진행중',
-            eduTargetCount: 30,
-            eduCompletedCount: 28
-        },
-        {
-            id: 'evt-3',
-            unit: '공통행정',
-            type: 'admin',
-            title: '6월 일자리 실적 입력 및 보건복지부 보고서 마감',
-            date: '2026-06-03',
-            start: '09:00',
-            end: '18:00',
-            location: '노인일자리 전담 사무실',
-            target: '일자리팀 담당 직원 전체',
-            notes: '새시스템 개편 이후 첫 입력이므로 누락자 필히 검증 요망.',
-            status: '완료'
-        },
-        {
-            id: 'evt-4',
-            unit: '손길나눔공방',
-            type: 'work',
-            title: '수공예 가방 제작용 원단 및 부자재 정기 입고 검수',
-            date: '2026-06-05',
-            start: '10:00',
-            end: '12:00',
-            location: '복지관 지하 1층 공방',
-            target: '공방 작업반장 어르신 및 관리자',
-            notes: '자재 거래처 변경으로 불량 수량 엄격히 카운팅 바람.',
-            status: '예정'
-        },
-        {
-            id: 'evt-5',
-            unit: '개인교육',
-            type: 'edu_personal',
-            title: '신임 노인일자리 담당자 직무역량 강화 교육',
-            date: '2026-06-12',
-            start: '13:00',
-            end: '17:00',
-            location: '전북특별자치도 인재개발원 대강당',
-            target: '조은진 담당자',
-            notes: '관외 출장 처리 필요. 출장여비 지급 신청 연계.',
-            status: '예정'
-        },
-        {
-            id: 'evt-6',
-            unit: '손길나눔공방',
-            type: 'meeting',
-            title: '손길나눔공방 생산성 제고 및 하반기 판로 개척 간담회',
-            date: '2026-06-25',
-            start: '15:00',
-            end: '16:30',
-            location: '관장실 대회의룸',
-            target: '공방 참여대표 5인 및 전담사무원',
-            notes: '로컬푸드 매장 입점 계약 최종 협의.',
-            status: '예정'
-        }
-    ];
+    // Cleared Seed Datasets - Ready for User Direct Inputs
+    let events = [];
+    let incidents = [];
+    let checklists = [];
+    let adminDeadlines = [];
+    let budgetItems = [];
 
-    // Checklists database
-    let checklists = [
-        { id: 'chk-1', date: '2026-06-04', text: '복지시설도우미 오전 출석 체크 및 근무태도 기록 확인', done: true },
-        { id: 'chk-2', date: '2026-06-04', text: '기상청 열대야/폭염 주의보 예보 실시간 확인 및 안전문자 발송', done: false },
-        { id: 'chk-3', date: '2026-06-04', text: '청결케어서비스 신규 대기자 명부 보건시스템(e-노인) 등록 완료', done: true },
-        { id: 'chk-4', date: '2026-06-05', text: '공방 입고 자재 세금계산서 정산 결재 상신', done: false }
-    ];
-
-    // Emergencies and Incidents
-    let incidents = [
-        { id: 'inc-1', unit: '청결케어서비스', type: 'accident', time: '10:15', text: '청결케어서비스 활동 중 수영공원에서 이모 어르신이 턱에 걸려 경미한 무릎 찰과상 발생. 휴대용 구급함으로 긴급 연고 및 밴드 소독 조치 후 현장 휴식 안내.' }
-    ];
-
-    // Yearly Administrative Timelines (수정 및 연동 가능하도록 가변 let 변수로 변경)
-    let adminDeadlines = [
-        { id: 'adl-1', month: '매월', specificDate: '2026-06-03', text: '매월 3일 - 일자리 보건시스템 참여 실적 입력 완료 마감' },
-        { id: 'adl-2', month: '매월', specificDate: '2026-06-04', text: '매월 4일 - 일자리 참여자 활동 수당 수령 및 은행 이체 지급일' },
-        { id: 'adl-3', month: '1월', specificDate: '2026-01-15', text: '신규 일자리 사업 참여 신청자 최종 심사 및 선발자 배치 관리대장 구축' },
-        { id: 'adl-4', month: '3월', specificDate: '2026-03-20', text: '1분기 노인일자리 사업 운영 현장 모니터링 실태 점검' },
-        { id: 'adl-5', month: '6월', specificDate: '2026-06-18', text: '상반기 참여자 안전 특별 위생 교육 수립 및 만족도 평가 실시' },
-        { id: 'adl-6', month: '9월', specificDate: '2026-09-25', text: '추경 예산 조율 및 하반기 사업비 집행 실태 총점검' },
-        { id: 'adl-7', month: '12월', specificDate: '2026-12-10', text: '연간 사업 정산보고서 작성 및 차년도 공모 사업 수주 계획안 제출 마감' }
-    ];
-
-    // Budget Allocations database (per business unit)
-    let budgetAllocations = {
-        '복지시설도우미': 15000000,
-        '청결케어서비스': 12000000,
-        '손길나눔공방': 18000000,
-        '공통행정': 5000000
+    // Base default configurations for Annual Allocated Budgets
+    let unitBudgetTotals = {
+        '복지시설도우미': 0,
+        '청결케어서비스': 0,
+        '손길나눔공방': 0,
+        '공통행정': 0
     };
 
-    // Detail Budget Items (Individual spends)
-    let budgetItems = [
-        { id: 'bi-1', unit: '복지시설도우미', name: '참여자 여름용 고기능성 안전조끼 (40벌)', allocated: 1200000, used: 1200000 },
-        { id: 'bi-2', unit: '복지시설도우미', name: '현장 모니터링 출장여비 및 전담인력 출장 실비', allocated: 800000, used: 450000 },
-        { id: 'bi-3', unit: '복지시설도우미', name: '상반기 보건/위생 마스크 및 개인 수건', allocated: 500000, used: 500000 },
-        { id: 'bi-4', unit: '청결케어서비스', name: '다목적 방역 분무기 및 세척 알코올 액상 소모품', allocated: 2000000, used: 1850000 },
-        { id: 'bi-5', unit: '청결케어서비스', name: '참여자 간담회 음료 및 격려 다과 대금', allocated: 400000, used: 400000 },
-        { id: 'bi-6', text: '손길나눔공방', name: '천연 가죽 원단 및 코튼 안감 패브릭 벌크 구매', allocated: 5000000, used: 4800000 },
-        { id: 'bi-7', unit: '손길나눔공방', name: '공방 전용 미싱기 모터 정밀 부품 교체 수리비', allocated: 1500000, used: 1300000 }
-    ];
-
-    // Global Weather Condition
-    let weatherAlertData = {
-        text: '오늘의 기상 정보: 양호 (실외 활동 정상 진행)',
-        severity: 'normal'
+    let weatherStatus = {
+        alertText: "오늘의 기상 정보: 양호 (실외 활동 정상 진행)",
+        type: "safe"
     };
 
-    // Helper: Business color codes
-    const unitStyles = {
-        '복지시설도우미': { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-800', dot: 'bg-blue-500' },
-        '청결케어서비스': { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-800', dot: 'bg-emerald-500' },
-        '손길나눔공방': { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-800', dot: 'bg-orange-500' },
-        '공통행정': { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-800', dot: 'bg-purple-500' },
-        '개인교육': { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-800', dot: 'bg-rose-500' }
-    };
-
-    // 2026 South Korean Public Holidays Database
-    const holidays2026 = {
-        '2026-01-01': '신정',
-        '2026-02-16': '설날연휴',
-        '2026-02-17': '설날',
-        '2026-02-18': '설날연휴',
-        '2026-03-01': '삼일절',
-        '2026-03-02': '대체공휴일',
-        '2026-05-05': '어린이날',
-        '2026-05-24': '부처님오신날',
-        '2026-05-25': '대체공휴일',
-        '2026-06-03': '지방선거',
-        '2026-06-06': '현충일',
-        '2026-07-17': '제헌절',
-        '2026-08-15': '광복절',
-        '2026-08-17': '대체공휴일',
-        '2026-09-24': '추석연휴',
-        '2026-09-25': '추석',
-        '2026-09-26': '추석연휴',
-        '2026-10-03': '개천절',
-        '2026-10-05': '대체공휴일',
-        '2026-10-09': '한글날',
-        '2026-12-25': '성탄절'
-    };
+    // Reusable Confirm Callback
+    let confirmCallback = null;
 
     // ----------------------------------------------------
-    // 2. LIFECYCLE & WINDOW LOAD EVENT
+    // 2. Lifecycle Initializer
     // ----------------------------------------------------
     window.onload = function() {
-        updateDateDisplays();
-        renderSidebarBadges();
-        renderWorkspace();
+        // Build empty baseline states based on user's real today
+        updateAllCounters();
+        renderAllViews();
+        document.getElementById('currentDateDisplay').textContent = getFormattedKoreanDate(getTodayDateString());
+
+        // Bind Confirm Modal Events
+        document.getElementById('confirmCancelBtn').onclick = () => hideModal('confirmModal');
+        document.getElementById('confirmOkBtn').onclick = () => {
+            if (confirmCallback) confirmCallback();
+            hideModal('confirmModal');
+        };
     };
 
+    function getFormattedKoreanDate(dateStr) {
+        const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+        const d = new Date(dateStr);
+        return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}`;
+    }
+
     // ----------------------------------------------------
-    // 3. UI VIEW SWITCHER & FILTERING
+    // 3. Custom Alert/Confirm Replacement
+    // ----------------------------------------------------
+    function triggerCustomConfirm(title, message, onConfirm) {
+        document.getElementById('confirmTitle').textContent = title;
+        document.getElementById('confirmMessage').textContent = message;
+        confirmCallback = onConfirm;
+        showModal('confirmModal');
+    }
+
+    // ----------------------------------------------------
+    // 4. Navigation & Filtering Systems
     // ----------------------------------------------------
     function switchView(viewName) {
         currentView = viewName;
         
-        // Update nav buttons style
+        // Handle Sidebar Navigation Styles
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.classList.remove('active', 'text-indigo-600', 'bg-indigo-50');
             btn.classList.add('text-slate-600', 'hover:bg-slate-50');
         });
-
-        const activeBtn = document.getElementById(`btn-view-${viewName}`);
-        if (activeBtn) {
-            activeBtn.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
-            activeBtn.classList.remove('text-slate-600', 'hover:bg-slate-50');
+        const targetBtn = document.getElementById(`btn-view-${viewName}`);
+        if(targetBtn) {
+            targetBtn.classList.remove('text-slate-600', 'hover:bg-slate-50');
+            targetBtn.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
         }
 
-        // Hide all view sections
+        // Display/Hide Dynamic Sections
         document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
-        
-        // Show active view section
-        const activeSec = document.getElementById(`view-section-${viewName}`);
-        if (activeSec) {
-            activeSec.classList.remove('hidden');
-            if (activeViewIsLayoutFlex(viewName)) {
-                activeSec.classList.add('flex');
-            }
-        }
+        document.getElementById(`view-section-${viewName}`).classList.remove('hidden');
 
-        renderWorkspace();
-    }
-
-    function activeViewIsLayoutFlex(view) {
-        return view === 'monthly' || view === 'weekly' || view === 'daily' || view === 'admin-edu' || view === 'budget';
+        renderAllViews();
     }
 
     function setUnitFilter(unitName) {
-        selectedUnitFilter = unitName;
+        activeUnitFilter = unitName;
         
-        // Toggle selected styling
+        // Update styling of filter buttons
         document.querySelectorAll('.unit-filter-btn').forEach(btn => {
-            btn.className = "unit-filter-btn flex items-center gap-3 w-full px-3 py-2 text-xs rounded-lg text-left font-medium border border-slate-100 bg-white hover:bg-slate-50 text-slate-700 transition-all";
+            btn.classList.remove('ring-2', 'ring-indigo-600', 'bg-slate-100');
         });
-
-        const activeFilterBtn = document.getElementById(`filter-btn-${unitName}`);
-        if (activeFilterBtn) {
-            const styles = unitStyles[unitName];
-            activeFilterBtn.className = `unit-filter-btn flex items-center gap-3 w-full px-3 py-2 text-xs rounded-lg text-left font-medium border ${styles.border} ${styles.bg} ${styles.text} font-bold shadow-sm transition-all`;
+        const activeBtn = document.getElementById(`filter-btn-${unitName}`);
+        if(activeBtn) {
+            activeBtn.classList.add('ring-2', 'ring-indigo-600', 'bg-slate-100');
         }
 
+        document.getElementById('filterStatusText').textContent = `필터: ${unitName}`;
         document.getElementById('clearFilterBtn').classList.remove('hidden');
-        document.getElementById('filterStatusText').innerText = `필터: ${unitName}`;
 
-        renderWorkspace();
+        renderAllViews();
     }
 
     function resetUnitFilter() {
-        selectedUnitFilter = null;
+        activeUnitFilter = null;
         document.querySelectorAll('.unit-filter-btn').forEach(btn => {
-            btn.className = "unit-filter-btn flex items-center gap-3 w-full px-3 py-2 text-xs rounded-lg text-left font-medium border border-slate-100 bg-white hover:bg-slate-50 text-slate-700 transition-all";
+            btn.classList.remove('ring-2', 'ring-indigo-600', 'bg-slate-100');
         });
+        document.getElementById('filterStatusText').textContent = '필터: 모든 사업단';
         document.getElementById('clearFilterBtn').classList.add('hidden');
-        document.getElementById('filterStatusText').innerText = '필터: 모든 사업단';
 
-        renderWorkspace();
+        renderAllViews();
     }
 
-    // ----------------------------------------------------
-    // 4. DATE OPERATIONS
-    // ----------------------------------------------------
     function changePeriod(direction) {
-        if (currentView === 'monthly' || currentView === 'budget' || currentView === 'admin-edu') {
-            // Shift Month
-            currentDate.setMonth(currentDate.getMonth() + direction);
-        } else if (currentView === 'weekly') {
-            // Shift Week (7 days)
-            currentDate.setDate(currentDate.getDate() + (direction * 7));
-        } else if (currentView === 'daily') {
-            // Shift Day
-            currentDate.setDate(currentDate.getDate() + direction);
+        if (currentView === 'monthly') {
+            currentMonth += direction;
+            if (currentMonth > 12) { currentMonth = 1; currentYear++; }
+            if (currentMonth < 1) { currentMonth = 12; currentYear--; }
+            document.getElementById('currentPeriodLabel').textContent = `${currentYear}년 ${currentMonth}월`;
+        } else if (currentView === 'weekly' || currentView === 'daily') {
+            let d = new Date(currentSelectedDate);
+            d.setDate(d.getDate() + (direction * (currentView === 'weekly' ? 7 : 1)));
+            currentSelectedDate = d.toISOString().split('T')[0];
+            currentYear = d.getFullYear();
+            currentMonth = d.getMonth() + 1;
+            document.getElementById('currentPeriodLabel').textContent = `${currentSelectedDate}`;
         }
-        updateDateDisplays();
-        renderWorkspace();
+        renderAllViews();
     }
 
     function setToday() {
-        currentDate = new Date(2026, 5, 4); // Reset to system's preset base date (2026-06-04)
-        updateDateDisplays();
-        renderWorkspace();
-    }
-
-    function updateDateDisplays() {
-        // Upper text
-        const daysKorean = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-        const formattedDate = `${currentDate.getFullYear()}년 ${currentDate.getMonth() + 1}월 ${currentDate.getDate()}일 ${daysKorean[currentDate.getDay()]}`;
-        document.getElementById('currentDateDisplay').innerText = formattedDate;
-
-        // Workspace Label text
-        let periodLabel = "";
-        if (currentView === 'monthly' || currentView === 'budget' || currentView === 'admin-edu') {
-            periodLabel = `${currentDate.getFullYear()}년 ${currentDate.getMonth() + 1}월`;
-        } else if (currentView === 'weekly') {
-            const startOfWeek = getStartOfWeek(currentDate);
-            const endOfWeek = new Date(startOfWeek);
-            endOfWeek.setDate(startOfWeek.getDate() + 4); // business week ends on Friday
-            periodLabel = `${startOfWeek.getFullYear()}.${startOfWeek.getMonth()+1}.${startOfWeek.getDate()} ~ ${endOfWeek.getFullYear()}.${endOfWeek.getMonth()+1}.${endOfWeek.getDate()} (주간)`;
-        } else if (currentView === 'daily') {
-            periodLabel = `${currentDate.getFullYear()}년 ${currentDate.getMonth() + 1}월 ${currentDate.getDate()}일`;
-        }
-        document.getElementById('currentPeriodLabel').innerText = periodLabel;
-
-        // Render D-days relative to currentDate
-        calculateDdays();
-    }
-
-    function getStartOfWeek(d) {
-        const date = new Date(d);
-        const day = date.getDay();
-        const diff = date.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
-        return new Date(date.setDate(diff));
-    }
-
-    // ----------------------------------------------------
-    // 5. SIDEBAR STATISTICS & D-DAY CALCULATOR (공통 연간 행정 일정과 완전 연동)
-    // ----------------------------------------------------
-    function calculateDdays() {
-        const ddayContainer = document.getElementById('sidebar-dday-list');
-        ddayContainer.innerHTML = '';
-
-        // 1. 공통 연간 행정 일정(adminDeadlines) 중에서 유효한 날짜가 지정된 일정들을 종합합니다.
-        // 2. 아울러 events에 기록된 '행정업무(admin)' 종류도 함께 고려하여 마감일 리스트를 생성합니다.
-        let deadlineItems = [];
-
-        // 연간 행정 일정 가공
-        adminDeadlines.forEach(adl => {
-            if (adl.specificDate) {
-                deadlineItems.push({
-                    title: adl.text.split(' - ')[1] || adl.text,
-                    dateStr: adl.specificDate,
-                    originType: 'yearly'
-                });
-            }
-        });
-
-        // 일반 등록 행정업무 가공
-        events.forEach(evt => {
-            if (evt.type === 'admin') {
-                deadlineItems.push({
-                    title: evt.title,
-                    dateStr: evt.date,
-                    originType: 'event'
-                });
-            }
-        });
-
-        // 기준일(currentDate) 생성
-        const baseTime = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()).getTime();
-
-        // 각 마감일들의 D-Day 수치 계산 및 객체 추가
-        let calculatedList = deadlineItems.map(item => {
-            const targetDate = new Date(item.dateStr);
-            const targetTime = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()).getTime();
-            
-            // 일수 계산
-            const diffMs = targetTime - baseTime;
-            const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
-            
-            return {
-                title: item.title,
-                dateStr: item.dateStr,
-                daysLeft: diffDays
-            };
-        });
-
-        // 중복 타이틀 제거 정규화
-        const seen = new Set();
-        calculatedList = calculatedList.filter(item => {
-            const duplicateKey = `${item.dateStr}_${item.title}`;
-            if (seen.has(duplicateKey)) return false;
-            seen.add(duplicateKey);
-            return true;
-        });
-
-        // D-Day가 0 이상(오늘 및 예정)인 것과 지나간 것을 구분하여 똑똑하게 정렬합니다.
-        // 정렬 1순위: 다가올 마감일 중 가장 잔여 일수가 적은 순 (daysLeft >= 0)
-        // 정렬 2순위: 이미 지나갔지만 최근 마감된 순 (daysLeft < 0, 절댓값이 작은 순)
-        let upcoming = calculatedList.filter(item => item.daysLeft >= 0).sort((a, b) => a.daysLeft - b.daysLeft);
-        let passed = calculatedList.filter(item => item.daysLeft < 0).sort((a, b) => b.daysLeft - a.daysLeft);
-
-        // 최종적으로 사용자에게 노출할 가장 긴급한 2개의 일정 병합
-        let finalDisplayList = [];
-        if (upcoming.length >= 2) {
-            finalDisplayList = upcoming.slice(0, 2);
+        const today = new Date(); // Link directly with live system date
+        currentSelectedDate = getTodayDateString();
+        currentYear = today.getFullYear();
+        currentMonth = today.getMonth() + 1;
+        
+        if (currentView === 'monthly') {
+            document.getElementById('currentPeriodLabel').textContent = `${currentYear}년 ${currentMonth}월`;
         } else {
-            finalDisplayList = [...upcoming, ...passed].slice(0, 2);
+            document.getElementById('currentPeriodLabel').textContent = `${currentSelectedDate}`;
         }
-
-        if (finalDisplayList.length === 0) {
-            ddayContainer.innerHTML = `
-                <div class="text-center py-2 text-slate-400 text-[11px] italic">등록된 마감 일정이 없습니다.</div>
-            `;
-            return;
-        }
-
-        finalDisplayList.forEach(item => {
-            const row = document.createElement('div');
-            row.className = "flex justify-between items-center gap-2 border-b border-indigo-100/30 pb-1.5 last:border-0";
-            
-            let badgeHTML = '';
-            if (item.daysLeft === 0) {
-                badgeHTML = `<span class="font-extrabold text-red-600 animate-pulse text-xs">D-Day</span>`;
-            } else if (item.daysLeft > 0) {
-                badgeHTML = `<span class="font-extrabold text-indigo-700 text-xs">D-${item.daysLeft}</span>`;
-            } else {
-                badgeHTML = `<span class="font-medium text-slate-400 text-[11px]">완료(D+${Math.abs(item.daysLeft)})</span>`;
-            }
-
-            row.innerHTML = `
-                <span class="truncate pr-1 text-slate-600 font-medium hover:text-indigo-900 transition-colors cursor-pointer" title="${item.title} (${item.dateStr})">
-                    ${item.title}
-                </span>
-                <span class="shrink-0 font-bold">${badgeHTML}</span>
-            `;
-            ddayContainer.appendChild(row);
-        });
-    }
-
-    function renderSidebarBadges() {
-        // Count monthly items matching active period year-month
-        const curYear = currentDate.getFullYear();
-        const curMonth = currentDate.getMonth();
-
-        const monthlyEvents = events.filter(e => {
-            const evDate = new Date(e.date);
-            return evDate.getFullYear() === curYear && evDate.getMonth() === curMonth;
-        });
-        document.getElementById('monthly-count').innerText = monthlyEvents.length;
-
-        // Weekly events count
-        const startOfWeek = getStartOfWeek(currentDate);
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-
-        const weeklyEvents = events.filter(e => {
-            const evDate = new Date(e.date);
-            return evDate >= startOfWeek && evDate <= endOfWeek;
-        });
-        document.getElementById('weekly-count').innerText = weeklyEvents.length;
-
-        // Daily events count
-        const todayStr = getYYYYMMDD(currentDate);
-        const dailyEvents = events.filter(e => e.date === todayStr);
-        document.getElementById('daily-count').innerText = dailyEvents.length;
+        renderAllViews();
     }
 
     // ----------------------------------------------------
-    // 6. RENDER WORKSPACE HUB
+    // 5. View Rendering Engines
     // ----------------------------------------------------
-    function renderWorkspace() {
-        renderSidebarBadges();
-        calculateDdays(); // 사이드바 연동 dday 목록 갱신
+    function renderAllViews() {
+        updateAllCounters();
+        renderDDayList();
 
         if (currentView === 'monthly') {
             renderMonthlyView();
@@ -1189,587 +863,498 @@
         }
     }
 
-    // ----------------------------------------------------
-    // 6.1 RENDER: MONTHLY VIEW
-    // ----------------------------------------------------
+    function updateAllCounters() {
+        const filtered = getFilteredEvents();
+        document.getElementById('monthly-count').textContent = filtered.length;
+        
+        // Current week count based on currently selected date
+        const weekEvents = events.filter(e => {
+            const date = new Date(e.date);
+            const curr = new Date(currentSelectedDate);
+            const startOfWeek = new Date(curr.setDate(curr.getDate() - curr.getDay()));
+            const endOfWeek = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6));
+            return date >= startOfWeek && date <= endOfWeek;
+        });
+        document.getElementById('weekly-count').textContent = weekEvents.length;
+
+        // Current day count
+        const dayEvents = events.filter(e => e.date === currentSelectedDate);
+        document.getElementById('daily-count').textContent = dayEvents.length;
+    }
+
+    function getFilteredEvents() {
+        if (activeUnitFilter) {
+            return events.filter(e => e.unit === activeUnitFilter);
+        }
+        return events;
+    }
+
+    // 5.1. Monthly Calendar Core Engine
     function renderMonthlyView() {
+        document.getElementById('monthlyCalendarTitle').textContent = `${currentYear}년 ${currentMonth}월 업무 캘린더`;
         const grid = document.getElementById('calendarDaysGrid');
         grid.innerHTML = '';
 
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
+        const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
 
-        // Update Title dynamically
-        const titleEl = document.getElementById('monthlyCalendarTitle');
-        if (titleEl) {
-            titleEl.innerText = `${year}년 ${month + 1}월 업무 캘린더`;
+        // Previous Month Padding Days
+        const prevMonthDays = new Date(currentYear, currentMonth - 1, 0).getDate();
+        for (let i = firstDay - 1; i >= 0; i--) {
+            const padDay = prevMonthDays - i;
+            grid.appendChild(createCalendarDayNode(padDay, true));
         }
 
-        const firstDayIndex = new Date(year, month, 1).getDay();
-        const totalDays = new Date(year, month + 1, 0).getDate();
-
-        // Previous month filler days
-        const prevMonthTotalDays = new Date(year, month, 0).getDate();
-        for (let i = firstDayIndex - 1; i >= 0; i--) {
-            const dayNum = prevMonthTotalDays - i;
-            const dayDiv = document.createElement('div');
-            dayDiv.className = 'bg-slate-50/50 border border-slate-100 p-2 min-h-[90px] rounded-lg opacity-40 flex flex-col justify-between';
-            dayDiv.innerHTML = `<span class="text-xs text-slate-300 font-semibold">${dayNum}</span>`;
-            grid.appendChild(dayDiv);
+        // Active Month Days
+        for (let day = 1; day <= daysInMonth; day++) {
+            const fullDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            const isToday = fullDate === getTodayDateString(); // Compare with actual live computer date
+            grid.appendChild(createCalendarDayNode(day, false, fullDate, isToday));
         }
 
-        // Active month days
-        for (let day = 1; day <= totalDays; day++) {
-            const dayDiv = document.createElement('div');
-            const dayDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const isToday = dayDateStr === '2026-06-04'; // highlight system today date
-            
-            // Check Korean 2026 public holidays
-            const holidayName = holidays2026[dayDateStr];
-            const isHoliday = !!holidayName;
-
-            dayDiv.className = `bg-white border ${isToday ? 'border-indigo-600 ring-1 ring-indigo-600/30' : 'border-slate-200'} p-2 min-h-[100px] rounded-xl flex flex-col justify-between hover:bg-slate-50/50 transition-colors cursor-pointer`;
-            dayDiv.setAttribute('onclick', `goToSpecificDay('${dayDateStr}')`);
-
-            // Calendar day cell header styling
-            let dayTextClass = "font-bold text-xs ";
-            const dayOfWeek = new Date(year, month, day).getDay();
-            if (dayOfWeek === 0 || isHoliday) dayTextClass += "text-red-500";
-            else if (dayOfWeek === 6) dayTextClass += "text-blue-500";
-            else dayTextClass += "text-slate-600";
-
-            let headerHTML = `<div class="flex justify-between items-center mb-1">
-                <div class="flex items-center gap-1 overflow-hidden">
-                    <span class="${dayTextClass}">${day}</span>
-                    ${isHoliday ? `<span class="text-[9px] text-red-500 font-bold bg-red-50 px-1 rounded truncate max-w-[55px]" title="${holidayName}">${holidayName}</span>` : ''}
-                </div>
-                ${isToday ? '<span class="bg-indigo-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shrink-0">오늘</span>' : ''}
-            </div>`;
-
-            // Filtered events on this date
-            const dayEvents = events.filter(e => {
-                if (e.date !== dayDateStr) return false;
-                if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
-                return true;
-            });
-
-            // Stack max 3 preview tags
-            let eventsHTML = '<div class="space-y-1 overflow-y-auto max-h-[75px] pr-1">';
-            dayEvents.slice(0, 3).forEach(evt => {
-                const style = unitStyles[evt.unit] || { bg: 'bg-slate-100', text: 'text-slate-700', dot: 'bg-slate-400' };
-                eventsHTML += `
-                    <div onclick="event.stopPropagation(); openEditModal('${evt.id}')" class="text-[9px] px-1.5 py-0.5 rounded border border-transparent hover:border-slate-300 transition-all ${style.bg} ${style.text} truncate flex items-center gap-1 font-medium" title="${evt.title}">
-                        <span class="w-1 h-1 rounded-full ${style.dot} shrink-0"></span>
-                        <span class="truncate">${evt.title}</span>
-                    </div>
-                `;
-            });
-            if (dayEvents.length > 3) {
-                eventsHTML += `<div class="text-[9px] text-slate-400 font-bold pl-1">+${dayEvents.length - 3}건 더보기</div>`;
-            }
-            eventsHTML += '</div>';
-
-            dayDiv.innerHTML = `<div>${headerHTML}${eventsHTML}</div>`;
-            grid.appendChild(dayDiv);
-        }
-
-        // Next month filler days to complete calendar grid row (6 rows * 7 columns = 42 cells total)
-        const totalCellsUsed = firstDayIndex + totalDays;
-        const remainingCells = 42 - totalCellsUsed;
-        for (let j = 1; j <= remainingCells; j++) {
-            const dayDiv = document.createElement('div');
-            dayDiv.className = 'bg-slate-50/50 border border-slate-100 p-2 min-h-[90px] rounded-lg opacity-40 flex flex-col justify-between';
-            dayDiv.innerHTML = `<span class="text-xs text-slate-300 font-semibold">${j}</span>`;
-            grid.appendChild(dayDiv);
+        // Next Month Padding Days
+        const totalRendered = firstDay + daysInMonth;
+        const nextPadding = totalRendered % 7 === 0 ? 0 : 7 - (totalRendered % 7);
+        for (let i = 1; i <= nextPadding; i++) {
+            grid.appendChild(createCalendarDayNode(i, true));
         }
     }
 
-    function goToSpecificDay(dateStr) {
-        const parts = dateStr.split('-');
-        currentDate = new Date(parts[0], parts[1] - 1, parts[2]);
-        updateDateDisplays();
-        switchView('daily');
+    function createCalendarDayNode(dayNum, isPadding, dateStr = '', isToday = false) {
+        const cell = document.createElement('div');
+        cell.className = `min-h-[100px] border border-slate-100 rounded-xl p-2 flex flex-col justify-between transition-all relative ${isPadding ? 'bg-slate-50/50 text-slate-300' : 'bg-white hover:shadow-md cursor-pointer'}`;
+        
+        if (isToday) {
+            cell.className += ' ring-2 ring-indigo-600 bg-indigo-50/20';
+        }
+
+        // Header node
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'flex justify-between items-center';
+        
+        const numberSpan = document.createElement('span');
+        numberSpan.className = `text-xs font-bold ${isPadding ? 'text-slate-300' : 'text-slate-700'}`;
+        numberSpan.textContent = dayNum;
+        dayHeader.appendChild(numberSpan);
+
+        if (isToday) {
+            const todayBadge = document.createElement('span');
+            todayBadge.className = 'bg-indigo-600 text-white font-bold text-[8px] px-1.5 py-0.2 rounded-full';
+            todayBadge.textContent = '오늘';
+            dayHeader.appendChild(todayBadge);
+        }
+        cell.appendChild(dayHeader);
+
+        // Events list container within cell
+        if (!isPadding) {
+            const dayEvents = getFilteredEvents().filter(e => e.date === dateStr);
+            const listContainer = document.createElement('div');
+            listContainer.className = 'space-y-1 mt-1 overflow-y-auto max-h-[80px]';
+
+            dayEvents.forEach(e => {
+                const badge = document.createElement('div');
+                badge.className = `text-[9px] px-1.5 py-0.5 rounded font-medium truncate ${getUnitColorStyle(e.unit)}`;
+                badge.textContent = `[${e.start}] ${e.title}`;
+                badge.onclick = (event) => {
+                    event.stopPropagation();
+                    openEditModal(e);
+                };
+                listContainer.appendChild(badge);
+            });
+            cell.appendChild(listContainer);
+
+            // Double Click Handler to create new event targeting selected day
+            cell.ondblclick = () => {
+                openAddModalWithDate(dateStr);
+            };
+            cell.onclick = () => {
+                currentSelectedDate = dateStr;
+                document.getElementById('currentPeriodLabel').textContent = dateStr;
+            };
+        }
+
+        return cell;
     }
 
-    // ----------------------------------------------------
-    // 6.2 RENDER: WEEKLY VIEW
-    // ----------------------------------------------------
+    // Helper: color token mapping
+    function getUnitColorStyle(unit) {
+        switch(unit) {
+            case '복지시설도우미': return 'bg-blue-50 text-blue-700 border-l-2 border-blue-500';
+            case '청결케어서비스': return 'bg-emerald-50 text-emerald-700 border-l-2 border-emerald-500';
+            case '손길나눔공방': return 'bg-orange-50 text-orange-700 border-l-2 border-orange-500';
+            case '공통행정': return 'bg-purple-50 text-purple-700 border-l-2 border-purple-500';
+            case '개인교육': return 'bg-rose-50 text-rose-700 border-l-2 border-rose-500';
+            default: return 'bg-slate-100 text-slate-700 border-l-2 border-slate-500';
+        }
+    }
+
+    // 5.2. Weekly View Drawing Engine
     function renderWeeklyView() {
         const grid = document.getElementById('weeklyDaysGrid');
         grid.innerHTML = '';
 
-        const startOfWeek = getStartOfWeek(currentDate);
-        const daysLabel = ['월', '화', '수', '목', '금']; // Mon to Fri Business focus
+        const curr = new Date(currentSelectedDate);
+        const dayOfWeek = curr.getDay(); // 0 is Sunday, 1 is Monday etc.
+        const startOfWeek = new Date(curr.setDate(curr.getDate() - dayOfWeek + 1)); // Anchor to Mon
 
+        const days = ['월', '화', '수', '목', '금'];
+        
         for (let i = 0; i < 5; i++) {
-            const dayDate = new Date(startOfWeek);
-            dayDate.setDate(startOfWeek.getDate() + i);
-            const dateStr = getYYYYMMDD(dayDate);
-            const isToday = dateStr === '2026-06-04';
-
-            const holidayName = holidays2026[dateStr];
-            const isHoliday = !!holidayName;
+            const d = new Date(startOfWeek);
+            d.setDate(startOfWeek.getDate() + i);
+            const dateStr = d.toISOString().split('T')[0];
+            const isToday = dateStr === getTodayDateString(); // Compare with actual live computer date
 
             const col = document.createElement('div');
-            col.className = `flex-1 min-h-[400px] bg-white rounded-2xl border ${isToday ? 'border-indigo-600 ring-2 ring-indigo-600/10' : 'border-slate-200'} p-4 flex flex-col shadow-sm`;
+            col.className = `flex-1 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col gap-4 min-h-[400px] ${isToday ? 'ring-2 ring-indigo-600 bg-indigo-50/10' : ''}`;
 
-            let dayNumClass = "text-sm font-bold ";
-            if (isHoliday) dayNumClass += "text-red-500";
-            else dayNumClass += "text-slate-800";
-
-            // Column Header
             col.innerHTML = `
-                <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
-                    <div class="overflow-hidden">
-                        <span class="text-xs text-slate-400 font-bold uppercase block flex items-center gap-1">
-                            ${daysLabel[i]}요일
-                            ${isHoliday ? `<span class="text-[9px] text-red-500 bg-red-50 px-1.5 py-0.2 rounded font-bold shrink-0">${holidayName}</span>` : ''}
-                        </span>
-                        <span class="${dayNumClass}">${dayDate.getMonth()+1}월 ${dayDate.getDate()}일</span>
-                    </div>
-                    ${isToday ? '<span class="bg-indigo-600 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shrink-0">오늘</span>' : ''}
+                <div class="border-b border-slate-100 pb-2">
+                    <span class="text-xs text-slate-400 font-bold">${dateStr}</span>
+                    <h4 class="text-base font-bold text-slate-800">${days[i]}요일</h4>
                 </div>
-                <div class="space-y-3 flex-1 overflow-y-auto" id="week-day-events-${dateStr}">
-                    <!-- Days Events -->
-                </div>
+                <div class="space-y-2 flex-1 overflow-y-auto" id="weekly-col-${dateStr}"></div>
             `;
-
             grid.appendChild(col);
 
-            // Populating Events for this column
-            const dayEvents = events.filter(e => {
-                if (e.date !== dateStr) return false;
-                if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
-                return true;
-            });
-
-            const evContainer = document.getElementById(`week-day-events-${dateStr}`);
-            if (dayEvents.length === 0) {
-                evContainer.innerHTML = `<div class="text-center py-10 text-slate-300 text-xs italic">일정이 없습니다</div>`;
+            // Infill events
+            const list = col.querySelector(`#weekly-col-${dateStr}`);
+            const dayEvents = getFilteredEvents().filter(e => e.date === dateStr);
+            if(dayEvents.length === 0) {
+                list.innerHTML = `<div class="text-[10px] text-slate-400 italic py-4">일정 없음</div>`;
             } else {
-                dayEvents.forEach(evt => {
-                    const style = unitStyles[evt.unit] || { bg: 'bg-slate-100', text: 'text-slate-700', dot: 'bg-slate-400', border: 'border-slate-200' };
-                    const statusColors = evt.status === '완료' ? 'bg-emerald-100 text-emerald-800' : (evt.status === '진행중' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600');
-                    
+                dayEvents.forEach(e => {
                     const card = document.createElement('div');
-                    card.className = `p-3 rounded-xl border ${style.border} ${style.bg} hover:shadow-sm cursor-pointer transition-all flex flex-col gap-1.5`;
-                    card.setAttribute('onclick', `openEditModal('${evt.id}')`);
+                    card.className = `p-2.5 rounded-xl text-xs font-semibold hover:shadow-sm cursor-pointer transition-all ${getUnitColorStyle(e.unit)}`;
                     card.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <span class="text-[9px] px-1.5 py-0.5 rounded font-bold ${statusColors}">${evt.status}</span>
-                            <span class="text-[9px] text-slate-400 font-semibold">${evt.start}</span>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-[10px] font-bold">[${e.start}~${e.end || ''}]</span>
+                            <span class="text-[9px] px-1 bg-white/80 rounded">${e.status}</span>
                         </div>
-                        <h5 class="text-xs font-bold text-slate-800 line-clamp-2 leading-relaxed">${evt.title}</h5>
-                        <p class="text-[10px] text-slate-400 truncate"><i class="fa-solid fa-location-dot mr-1"></i>${evt.location || '복지관 내'}</p>
+                        <p class="truncate text-slate-800">${e.title}</p>
                     `;
-                    evContainer.appendChild(card);
+                    card.onclick = () => openEditModal(e);
+                    list.appendChild(card);
                 });
             }
         }
     }
 
-    // ----------------------------------------------------
-    // 6.3 RENDER: DAILY VIEW
-    // ----------------------------------------------------
+    // 5.3. Daily Timeline Drawing Engine
     function renderDailyView() {
-        const todayStr = getYYYYMMDD(currentDate);
-        
-        // Update daily title header
-        document.getElementById('dailyDateTitle').innerText = `${todayStr} 오늘의 시간별 일정`;
-
-        // Load checklists
-        renderDailyChecklist(todayStr);
-
-        // Load incidents
-        renderDailyIncidents();
-
-        // Hourly Timeline
+        document.getElementById('dailyDateTitle').textContent = `${currentSelectedDate} 시간별 일정 동선`;
         const timeline = document.getElementById('dailyTimeline');
         timeline.innerHTML = '';
 
-        const activeEvents = events.filter(e => {
-            if (e.date !== todayStr) return false;
-            if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
-            return true;
-        });
+        const activeDayEvents = getFilteredEvents().filter(e => e.date === currentSelectedDate);
+        document.getElementById('dailyTotalCount').textContent = `일정 ${activeDayEvents.length}건`;
 
-        document.getElementById('dailyTotalCount').innerText = `총 ${activeEvents.length}건`;
-
-        if (activeEvents.length === 0) {
+        if(activeDayEvents.length === 0) {
             timeline.innerHTML = `
-                <div class="text-center py-16 text-slate-400 flex flex-col items-center gap-3">
-                    <i class="fa-regular fa-folder-open text-4xl text-slate-200 animate-bounce"></i>
-                    <p class="text-xs">오늘 지정된 업무 및 일정이 존재하지 않습니다.</p>
+                <div class="text-center py-12 text-slate-400 italic text-xs">
+                    지정된 일정이 없습니다. 우측 상단 '새 일정 등록하기'를 통해 첫 작업을 등록해보세요.
                 </div>
             `;
-            return;
-        }
-
-        // Sort events chronologically
-        activeEvents.sort((a,b) => a.start.localeCompare(b.start));
-
-        activeEvents.forEach(evt => {
-            const style = unitStyles[evt.unit] || { bg: 'bg-slate-100', border: 'border-slate-200', text: 'text-slate-800', dot: 'bg-slate-400' };
-            const statusColors = evt.status === '완료' ? 'bg-emerald-100 text-emerald-800' : (evt.status === '진행중' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-600');
-
-            const row = document.createElement('div');
-            row.className = `p-4 rounded-xl border ${style.border} bg-white flex flex-col md:flex-row justify-between gap-4 hover:shadow-sm cursor-pointer transition-all border-l-4 border-l-indigo-600`;
-            row.setAttribute('onclick', `openEditModal('${evt.id}')`);
-
-            row.innerHTML = `
-                <div class="flex-1 space-y-2">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${style.bg} ${style.text}">${evt.unit}</span>
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full ${statusColors}">${evt.status}</span>
-                        <span class="text-xs text-indigo-900 font-semibold flex items-center gap-1">
-                            <i class="fa-regular fa-clock"></i> ${evt.start} ${evt.end ? '~ ' + evt.end : ''}
-                        </span>
+        } else {
+            // Sort by start hours
+            activeDayEvents.sort((a, b) => a.start.localeCompare(b.start));
+            
+            activeDayEvents.forEach(e => {
+                const item = document.createElement('div');
+                item.className = "flex gap-4 border-l-2 border-indigo-100 pl-4 relative py-2";
+                item.innerHTML = `
+                    <div class="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-indigo-600"></div>
+                    <div class="text-xs text-slate-400 font-bold pt-1 w-20 shrink-0">${e.start} ~ ${e.end || ''}</div>
+                    <div class="flex-1 bg-slate-50 border border-slate-100 p-3 rounded-xl hover:shadow-md cursor-pointer transition-all flex flex-col gap-1.5" onclick="openEditModalById('${e.id}')">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded-full">${e.unit}</span>
+                            <span class="text-[10px] ${e.status === '완료' ? 'text-emerald-600 bg-emerald-50' : 'text-orange-600 bg-orange-50'} font-bold px-2 py-0.5 rounded-full">${e.status}</span>
+                        </div>
+                        <h4 class="font-bold text-sm text-slate-800">${e.title}</h4>
+                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
+                            <span><i class="fa-solid fa-location-dot mr-1"></i>${e.location || '복지관 내'}</span>
+                            <span><i class="fa-solid fa-users mr-1"></i>${e.target || '대상 한정 없음'}</span>
+                        </div>
+                        ${e.notes ? `<p class="text-xs text-slate-400 border-t border-slate-100/50 pt-1.5 mt-1">비고: ${e.notes}</p>` : ''}
                     </div>
-                    <h5 class="text-sm font-bold text-slate-800 leading-snug">${evt.title}</h5>
-                    ${evt.notes ? `<p class="text-xs text-slate-500 bg-slate-50 p-2.5 rounded-lg border border-slate-100 italic">“${evt.notes}”</p>` : ''}
-                </div>
-                <div class="flex flex-col text-left md:text-right justify-between text-xs text-slate-400 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 md:pl-4 space-y-1 min-w-[150px]">
-                    <div>
-                        <span class="block"><i class="fa-solid fa-location-dot mr-1"></i>${evt.location || '미정'}</span>
-                        <span class="block mt-1"><i class="fa-solid fa-users mr-1"></i>${evt.target || '제한없음'}</span>
-                    </div>
-                    <span class="text-[10px] text-slate-300 font-bold block">클릭하여 일정 편집</span>
-                </div>
-            `;
-            timeline.appendChild(row);
-        });
-    }
-
-    // Daily Timeline Helper Components
-    function renderDailyChecklist(todayStr) {
-        const container = document.getElementById('dailyChecklist');
-        container.innerHTML = '';
-
-        const activeChecklists = checklists.filter(c => c.date === todayStr);
-
-        if (activeChecklists.length === 0) {
-            container.innerHTML = `<li class="text-center py-6 text-slate-300 text-xs italic">등록된 체크항목이 없습니다</li>`;
-            return;
+                `;
+                timeline.appendChild(item);
+            });
         }
 
-        activeChecklists.forEach(item => {
-            const li = document.createElement('li');
-            li.className = 'flex items-start gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors';
-            li.innerHTML = `
-                <input type="checkbox" onchange="toggleChecklistItem('${item.id}')" ${item.done ? 'checked' : ''} class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 rounded border-slate-300 mt-0.5 cursor-pointer">
-                <span class="text-xs text-slate-600 leading-relaxed cursor-pointer flex-1 ${item.done ? 'line-through text-slate-400 font-normal' : 'font-medium text-slate-800'}" onclick="toggleChecklistItem('${item.id}')">
-                    ${item.text}
-                </span>
-                <button onclick="deleteChecklistItem('${item.id}')" class="text-slate-300 hover:text-red-500 transition-colors"><i class="fa-regular fa-trash-can text-[11px]"></i></button>
-            `;
-            container.appendChild(li);
-        });
+        renderChecklist();
+        renderIncidentLog();
     }
 
-    function toggleChecklistItem(id) {
-        const item = checklists.find(c => c.id === id);
-        if (item) {
-            item.done = !item.done;
-            renderDailyChecklist(getYYYYMMDD(currentDate));
+    // Checklist drawing
+    function renderChecklist() {
+        const list = document.getElementById('dailyChecklist');
+        list.innerHTML = '';
+        const dayChecklist = checklists.filter(c => c.date === currentSelectedDate);
+
+        if(dayChecklist.length === 0) {
+            list.innerHTML = `<li class="text-[11px] text-slate-400 italic text-center py-4">체크사항이 없습니다. '추가' 버튼을 클릭해 등록해보세요.</li>`;
+        } else {
+            dayChecklist.forEach(c => {
+                const li = document.createElement('li');
+                li.className = "flex items-center gap-3 bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-xs";
+                li.innerHTML = `
+                    <input type="checkbox" ${c.checked ? 'checked' : ''} onchange="toggleChecklist('${c.id}')" class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
+                    <span class="flex-1 ${c.checked ? 'line-through text-slate-400' : 'text-slate-700 font-medium'}">${c.text}</span>
+                    <button onclick="deleteChecklist('${c.id}')" class="text-slate-300 hover:text-red-500"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
+                `;
+                list.appendChild(li);
+            });
         }
     }
 
-    // Checklist Input
+    function toggleChecklist(id) {
+        const target = checklists.find(c => c.id === id);
+        if(target) {
+            target.checked = !target.checked;
+            renderChecklist();
+        }
+    }
+
     function addChecklistItem() {
-        const text = prompt('오늘 달성해야 할 구체적인 업무 목표를 입력해 주세요:');
-        if (!text || text.trim() === '') return;
-
-        checklists.push({
-            id: 'chk-' + Date.now(),
-            date: getYYYYMMDD(currentDate),
-            text: text,
-            done: false
-        });
-        renderDailyChecklist(getYYYYMMDD(currentDate));
+        const text = prompt("새로운 일일 체크 항목을 작성해주세요:");
+        if (text && text.trim() !== '') {
+            checklists.push({
+                id: 'chk-' + Date.now(),
+                date: currentSelectedDate,
+                text: text,
+                checked: false
+            });
+            renderChecklist();
+        }
     }
 
-    function deleteChecklistItem(id) {
+    // Delete Checklist Helper
+    function deleteChecklist(id) {
         checklists = checklists.filter(c => c.id !== id);
-        renderDailyChecklist(getYYYYMMDD(currentDate));
+        renderChecklist();
     }
 
-    function renderDailyIncidents() {
+    // Incident Log drawing
+    function renderIncidentLog() {
         const container = document.getElementById('incidentLogContainer');
         container.innerHTML = '';
 
-        const activeIncidents = incidents;
-
-        if (activeIncidents.length === 0) {
+        if(incidents.length === 0) {
             container.innerHTML = `
-                <div class="text-center py-6 text-slate-300 text-xs italic">
-                    금일 보고된 응급 사건이 없습니다.
+                <div class="text-[11px] text-slate-400 italic text-center py-6">
+                    오늘 접수된 돌발 특이사항 내역이 없습니다.
                 </div>
             `;
-            return;
+        } else {
+            incidents.forEach(inc => {
+                const box = document.createElement('div');
+                box.className = "bg-red-50 border border-red-100 p-3 rounded-xl flex flex-col gap-1.5 relative";
+                box.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="text-[9px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded">${inc.unit}</span>
+                        <span class="text-[9px] text-slate-400">${inc.time.replace('T', ' ')}</span>
+                    </div>
+                    <p class="text-xs text-slate-700 leading-relaxed font-semibold">${inc.text}</p>
+                    <button onclick="deleteIncident('${inc.id}')" class="absolute right-3 bottom-2 text-slate-400 hover:text-red-600"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                `;
+                container.appendChild(box);
+            });
+        }
+    }
+
+    // 5.4. Education & Administrative Deadlines Drawing Engine
+    function renderAdminEduView() {
+        // Toggle Sub-Tabs visual styles
+        const tabBus = document.getElementById('edu-tab-business');
+        const tabPers = document.getElementById('edu-tab-personal');
+        if (activeEduTab === 'business') {
+            tabBus.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center bg-white text-rose-600 shadow-sm";
+            tabPers.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-500 hover:text-slate-800 hover:bg-slate-50/50";
+        } else {
+            tabBus.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-500 hover:text-slate-800 hover:bg-slate-50/50";
+            tabPers.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center bg-white text-indigo-600 shadow-sm";
         }
 
-        activeIncidents.forEach(inc => {
-            const row = document.createElement('div');
-            row.className = 'p-3 bg-red-50/50 border border-red-100 rounded-xl space-y-2 relative';
-            row.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <span class="text-[10px] font-bold bg-red-100 text-red-800 px-2 py-0.5 rounded">${inc.unit}</span>
-                    <span class="text-[10px] text-slate-400 font-bold">${inc.time} 발생</span>
-                </div>
-                <p class="text-xs text-slate-700 leading-relaxed font-medium">${inc.text}</p>
-                <button onclick="deleteIncident('${inc.id}')" class="absolute top-2 right-2 text-slate-300 hover:text-red-600 transition-all"><i class="fa-solid fa-xmark text-xs"></i></button>
-            `;
-            container.appendChild(row);
-        });
-    }
-
-    function openIncidentModal() {
-        // Preset field time with current time
-        const now = new Date();
-        document.getElementById('incident-time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-        openModal('incidentModal');
-    }
-
-    function closeIncidentModal() {
-        closeModal('incidentModal');
-        document.getElementById('incidentForm').reset();
-    }
-
-    function saveIncident(e) {
-        e.preventDefault();
-        const unit = document.getElementById('incident-unit').value;
-        const type = document.getElementById('incident-type').value;
-        const time = document.getElementById('incident-time').value;
-        const text = document.getElementById('incident-text').value;
-
-        incidents.push({
-            id: 'inc-' + Date.now(),
-            unit,
-            type,
-            time,
-            text
-        });
-
-        closeIncidentModal();
-        renderDailyIncidents();
-    }
-
-    function deleteIncident(id) {
-        incidents = incidents.filter(i => i.id !== id);
-        renderDailyIncidents();
-    }
-
-    // ----------------------------------------------------
-    // 6.4 RENDER: ADMINISTRATIVE & EDUCATION MANAGEMENT VIEW (수정 기능 탑재)
-    // ----------------------------------------------------
-    function renderAdminEduView() {
-        // Render Left side list: safety, participant education
+        // Render Education List
         const eduContainer = document.getElementById('educationListContainer');
         eduContainer.innerHTML = '';
-
-        let eduEvents = events.filter(e => e.type === 'edu_business' || e.type === 'edu_personal');
-
-        if (selectedUnitFilter) {
-            // Apply filtering if specified
-            eduEvents = eduEvents.filter(e => e.unit === selectedUnitFilter);
-        }
+        
+        // Filter events list based on the active tab type
+        const targetType = activeEduTab === 'business' ? 'edu_business' : 'edu_personal';
+        const eduEvents = events.filter(e => e.type === targetType);
 
         if (eduEvents.length === 0) {
-            eduContainer.innerHTML = `<div class="text-center py-12 text-slate-400 text-xs italic">등록된 연동 교육 일정이 없습니다.</div>`;
-        } else {
-            eduEvents.forEach(edu => {
-                const isBusiness = edu.type === 'edu_business';
-                const percent = isBusiness && edu.eduTargetCount ? Math.round((edu.eduCompletedCount / edu.eduTargetCount) * 100) : null;
-                
-                const card = document.createElement('div');
-                card.className = 'p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col gap-3 relative hover:shadow-sm transition-all';
-                card.innerHTML = `
-                    <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-[10px] font-bold text-rose-600 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full mr-2">${isBusiness ? '참여자 의무교육' : '담당자 전문연수'}</span>
-                            <span class="text-[10px] font-bold text-slate-400">${edu.date} (${edu.start})</span>
-                        </div>
-                        <button onclick="openEditModal('${edu.id}')" class="text-xs text-indigo-600 hover:underline font-bold">수정</button>
-                    </div>
-                    <h5 class="text-sm font-bold text-slate-800">${edu.title}</h5>
-                    
-                    ${isBusiness ? `
-                        <div class="bg-white p-3 rounded-xl border border-slate-200/60 space-y-2">
-                            <div class="flex justify-between text-xs text-slate-500 font-medium">
-                                <span>교육 이수 진척 현황</span>
-                                <span class="font-bold text-rose-600">${edu.eduCompletedCount || 0} / ${edu.eduTargetCount || 0} 명 (${percent || 0}%)</span>
-                            </div>
-                            <div class="w-full bg-slate-100 rounded-full h-1.5">
-                                <div class="bg-rose-500 h-1.5 rounded-full" style="width: ${percent || 0}%"></div>
-                            </div>
-                        </div>
-                    ` : `
-                        <p class="text-xs text-slate-500"><i class="fa-solid fa-location-dot mr-1"></i> 장소: ${edu.location || '미정'}</p>
-                    `}
-                `;
-                eduContainer.appendChild(card);
-            });
-        }
-
-        // Render Right side: 공통 연간 행정 일정 개편 (클릭 수정 연동)
-        const adminContainer = document.getElementById('adminDeadlinesList');
-        adminContainer.innerHTML = '';
-
-        adminDeadlines.forEach((dl) => {
-            const row = document.createElement('div');
-            row.className = 'p-3 bg-white border border-slate-100 hover:border-purple-200 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-all hover:shadow-sm';
-            row.setAttribute('onclick', `openEditAdminDeadlineModal('${dl.id}')`);
-            
-            // 날짜 출력
-            const dateBadge = dl.specificDate ? `<span class="text-[10px] text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded font-bold">${dl.specificDate}</span>` : '';
-
-            row.innerHTML = `
-                <div class="flex items-center gap-3 overflow-hidden">
-                    <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg shrink-0">${dl.month}</span>
-                    <div class="flex flex-col gap-0.5 overflow-hidden">
-                        <span class="text-xs text-slate-700 font-semibold leading-relaxed truncate">${dl.text}</span>
-                        ${dateBadge}
-                    </div>
-                </div>
-                <div class="shrink-0 text-slate-300 font-bold text-xs flex items-center gap-1.5">
-                    <span class="text-purple-600 text-[10px] hover:underline flex items-center gap-1"><i class="fa-solid fa-pen-to-square"></i> 편집</span>
+            const tabName = activeEduTab === 'business' ? '참여자 필수 안전/소양 교육' : '담당자 실무/출장 교육';
+            eduContainer.innerHTML = `
+                <div class="text-xs text-slate-400 italic py-12 text-center">
+                    등록된 ${tabName} 일정이 없습니다.<br>상단 '교육 일정 등록' 단추를 통해 일정을 등록해보세요.
                 </div>
             `;
-            adminContainer.appendChild(row);
-        });
-    }
-
-    // 연간 행정 일정 모달 관련 기능들
-    function openAdminDeadlineModal() {
-        document.getElementById('adminDeadlineForm').reset();
-        document.getElementById('deadline-id').value = '';
-        document.getElementById('btn-deadline-delete').classList.add('hidden');
-        document.getElementById('adminDeadlineModalTitle').innerText = '새 공통 연간 행정 일정 등록';
-        openModal('adminDeadlineModal');
-    }
-
-    function openEditAdminDeadlineModal(id) {
-        const dl = adminDeadlines.find(item => item.id === id);
-        if (!dl) return;
-
-        document.getElementById('deadline-id').value = dl.id;
-        document.getElementById('deadline-month').value = dl.month;
-        document.getElementById('deadline-specific-date').value = dl.specificDate || '';
-        document.getElementById('deadline-text').value = dl.text;
-
-        document.getElementById('btn-deadline-delete').classList.remove('hidden');
-        document.getElementById('adminDeadlineModalTitle').innerText = '연간 행정 일정 상세 수정';
-        openModal('adminDeadlineModal');
-    }
-
-    function closeAdminDeadlineModal() {
-        closeModal('adminDeadlineModal');
-    }
-
-    function saveAdminDeadline(e) {
-        e.preventDefault();
-
-        const id = document.getElementById('deadline-id').value;
-        const month = document.getElementById('deadline-month').value;
-        const specificDate = document.getElementById('deadline-specific-date').value;
-        const text = document.getElementById('deadline-text').value;
-
-        if (id) {
-            // 수정
-            const idx = adminDeadlines.findIndex(item => item.id === id);
-            if (idx !== -1) {
-                adminDeadlines[idx] = { id, month, specificDate, text };
-            }
         } else {
-            // 신규 등록
-            adminDeadlines.push({
-                id: 'adl-' + Date.now(),
-                month,
-                specificDate,
-                text
+            eduEvents.forEach(edu => {
+                const box = document.createElement('div');
+                box.className = "bg-slate-50 border border-slate-150 p-4 rounded-xl space-y-2 relative transition-all hover:shadow-sm";
+                
+                if (activeEduTab === 'business') {
+                    // Participant Education Layout (with target & completed ratio progress bar)
+                    const target = edu.eduTarget || 0;
+                    const completed = edu.eduCompleted || 0;
+                    const ratio = target > 0 ? Math.round((completed / target) * 100) : 0;
+
+                    box.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">${edu.unit}</span>
+                            <span class="text-[11px] text-slate-400">${edu.date} [${edu.start}]</span>
+                        </div>
+                        <h5 class="font-bold text-sm text-slate-800">${edu.title}</h5>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-500">
+                            <div>참석 목표 대상: <strong class="text-slate-800">${completed}명</strong> / 전체 ${target}명</div>
+                            <div>교육 이수율: <strong class="text-indigo-600">${ratio}%</strong></div>
+                        </div>
+                        <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-indigo-600 h-full" style="width: ${Math.min(ratio, 100)}%"></div>
+                        </div>
+                        <div class="text-[11px] text-slate-400">비고: ${edu.notes || '없음'}</div>
+                        <div class="flex justify-end gap-2 pt-1">
+                            <button onclick="openEditModalById('${edu.id}')" class="text-xs font-bold text-indigo-600 hover:underline">상세 편집</button>
+                        </div>
+                    `;
+                } else {
+                    // Staff/Coordinator Education Layout
+                    box.innerHTML = `
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">${edu.unit}</span>
+                            <span class="text-[11px] text-slate-400">${edu.date} [${edu.start} ~ ${edu.end || ''}]</span>
+                        </div>
+                        <h5 class="font-bold text-sm text-slate-800">${edu.title}</h5>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-500">
+                            <div>교육 장소: <strong class="text-slate-700">${edu.location || '지정되지 않음'}</strong></div>
+                            <div>참석 대상: <strong class="text-slate-700">${edu.target || '지정되지 않음'}</strong></div>
+                        </div>
+                        <div class="text-[11px] text-slate-400">교육 세부 내용: ${edu.notes || '없음'}</div>
+                        <div class="flex justify-end gap-2 pt-1">
+                            <button onclick="openEditModalById('${edu.id}')" class="text-xs font-bold text-indigo-600 hover:underline">상세 편집</button>
+                        </div>
+                    `;
+                }
+                eduContainer.appendChild(box);
             });
         }
 
-        closeAdminDeadlineModal();
-        renderWorkspace(); // 화면 렌더링 및 사이드바 D-day 실시간 재정렬 반영
-    }
+        // Render Administrative Deadlines List
+        const dlList = document.getElementById('adminDeadlinesList');
+        dlList.innerHTML = '';
 
-    function deleteAdminDeadline() {
-        const id = document.getElementById('deadline-id').value;
-        if (!id) return;
-
-        if (confirm('이 행정 일정을 연간 일정 대장에서 최종 삭제 처리하시겠습니까?')) {
-            adminDeadlines = adminDeadlines.filter(item => item.id !== id);
-            closeAdminDeadlineModal();
-            renderWorkspace();
-        }
-    }
-
-    // ----------------------------------------------------
-    // 6.5 RENDER: BUDGET VIEW
-    // ----------------------------------------------------
-    function renderBudgetView() {
-        // Render Active Business Unit Budget Dashboard
-        const targetUnit = activeBudgetTab;
-        
-        // Populate Title
-        document.getElementById('unit-budget-title').innerText = `${targetUnit} 품목별 예산 집행 현황`;
-
-        // 1. Allocated Budget (Direct limit setup)
-        const budgetTotal = budgetAllocations[targetUnit] || 0;
-        document.getElementById('unit-budget-sum').innerText = `₩${budgetTotal.toLocaleString()}`;
-
-        // 2. Used Budget Summation
-        const filteredItems = budgetItems.filter(item => item.unit === targetUnit);
-        const usedTotal = filteredItems.reduce((acc, curr) => acc + Number(curr.used), 0);
-        document.getElementById('unit-used-sum').innerText = `₩${usedTotal.toLocaleString()}`;
-
-        // 3. Balance Remaining
-        const balance = budgetTotal - usedTotal;
-        const balanceDisplay = document.getElementById('unit-remaining-sum');
-        balanceDisplay.innerText = `₩${balance.toLocaleString()}`;
-        if (balance < 0) {
-            balanceDisplay.className = "text-lg font-bold text-rose-600";
+        if(adminDeadlines.length === 0) {
+            dlList.innerHTML = `<div class="text-xs text-slate-400 italic py-6 text-center">등록된 연간 행정 마감 일정이 없습니다.</div>`;
         } else {
-            balanceDisplay.className = "text-lg font-bold text-emerald-600";
+            adminDeadlines.forEach(dl => {
+                const today = new Date(); // Link directly with live system date
+                today.setHours(0, 0, 0, 0); // clear times
+                const targetDate = new Date(dl.date);
+                const diffTime = targetDate - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                let ddayBadge = '';
+                if(diffDays === 0) ddayBadge = `<span class="bg-red-600 text-white font-bold px-2 py-0.5 rounded text-[10px]">D-Day</span>`;
+                else if(diffDays < 0) ddayBadge = `<span class="bg-slate-400 text-white font-bold px-2 py-0.5 rounded text-[10px]">종료</span>`;
+                else ddayBadge = `<span class="bg-orange-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">D-${diffDays}</span>`;
+
+                const item = document.createElement('div');
+                item.className = "flex justify-between items-center bg-slate-50 hover:bg-slate-100 p-3 rounded-xl border border-slate-200 transition-all";
+                item.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        ${ddayBadge}
+                        <div>
+                            <h6 class="text-xs font-bold text-slate-800">${dl.title}</h6>
+                            <span class="text-[10px] text-slate-400">기한: ${dl.date} ${dl.notes ? `| ${dl.notes}` : ''}</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="editAdminDeadline('${dl.id}')" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold px-2 py-1"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteAdminDeadline('${dl.id}')" class="text-slate-300 hover:text-red-600 text-xs font-bold px-1 py-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                `;
+                dlList.appendChild(item);
+            });
+        }
+    }
+
+    function switchEduTab(tabName) {
+        activeEduTab = tabName;
+        renderAdminEduView();
+    }
+
+    // 5.5. Refined Budget View Drawing Engine
+    function renderBudgetView() {
+        document.getElementById('unit-budget-title').textContent = `${activeBudgetUnit} 품목별 예산 실계 조율 현황`;
+        
+        // Tab buttons styling
+        document.querySelectorAll('.budget-tab-btn').forEach(btn => {
+            btn.className = "budget-tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all";
+        });
+        const currentTab = document.getElementById(`budget-tab-${activeBudgetUnit}`);
+        if(currentTab) {
+            currentTab.className = "budget-tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white transition-all";
         }
 
-        // 4. Percentage ratio
-        const ratio = budgetTotal > 0 ? Math.min(Math.round((usedTotal / budgetTotal) * 100), 100) : 0;
-        document.getElementById('unit-ratio-text').innerText = `${ratio}%`;
-        document.getElementById('unit-ratio-bar').style.width = `${ratio}%`;
+        // Calculation variables
+        const limitTotal = unitBudgetTotals[activeBudgetUnit] || 0;
+        const items = budgetItems.filter(b => b.unit === activeBudgetUnit);
+        
+        let usedSum = 0;
+        items.forEach(item => usedSum += item.used);
+        
+        const remaining = limitTotal - usedSum;
+        const ratio = limitTotal > 0 ? Math.round((usedSum / limitTotal) * 100) : 0;
 
-        // Load items table body
+        // Populate metric cards
+        document.getElementById('unit-budget-sum').textContent = `₩${limitTotal.toLocaleString()}`;
+        document.getElementById('unit-used-sum').textContent = `₩${usedSum.toLocaleString()}`;
+        document.getElementById('unit-remaining-sum').textContent = `₩${remaining.toLocaleString()}`;
+        document.getElementById('unit-ratio-text').textContent = `${ratio}%`;
+        document.getElementById('unit-ratio-bar').style.width = `${Math.min(ratio, 100)}%`;
+
+        // Highlight bar color if ratio is critical (over 90%)
+        const barElement = document.getElementById('unit-ratio-bar');
+        if (ratio >= 100) {
+            barElement.className = "bg-rose-600 h-2 rounded-full";
+        } else if (ratio >= 85) {
+            barElement.className = "bg-amber-500 h-2 rounded-full";
+        } else {
+            barElement.className = "bg-indigo-600 h-2 rounded-full";
+        }
+
+        // Build items table
         const tbody = document.getElementById('budgetItemsTableBody');
         tbody.innerHTML = '';
-        
-        const noDataText = document.getElementById('budgetNoData');
+        const noData = document.getElementById('budgetNoData');
 
-        if (filteredItems.length === 0) {
-            noDataText.classList.remove('hidden');
+        if(items.length === 0) {
+            noData.classList.remove('hidden');
         } else {
-            noDataText.classList.add('hidden');
-            filteredItems.forEach(item => {
-                const itemBalance = item.allocated - item.used;
+            noData.classList.add('hidden');
+            items.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50/50 text-xs";
                 const itemRatio = item.allocated > 0 ? Math.round((item.used / item.allocated) * 100) : 0;
                 
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition-colors border-b border-slate-100 text-xs";
                 tr.innerHTML = `
-                    <td class="py-3 px-4 font-bold text-slate-800">${item.name}</td>
-                    <td class="py-3 px-4 text-right font-medium text-slate-600">₩${item.allocated.toLocaleString()}</td>
-                    <td class="py-3 px-4 text-right font-semibold text-orange-600">₩${item.used.toLocaleString()}</td>
-                    <td class="py-3 px-4 text-right font-semibold ${itemBalance < 0 ? 'text-rose-600' : 'text-emerald-600'}">₩${itemBalance.toLocaleString()}</td>
+                    <td class="py-3 px-4 font-semibold text-slate-800">${item.name}</td>
+                    <td class="py-3 px-4 text-right font-medium">₩${item.allocated.toLocaleString()}</td>
+                    <td class="py-3 px-4 text-right font-medium text-orange-600">₩${item.used.toLocaleString()}</td>
+                    <td class="py-3 px-4 text-right font-medium text-slate-500">₩${(item.allocated - item.used).toLocaleString()}</td>
                     <td class="py-3 px-4">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-bold text-slate-700 text-[10px]">${itemRatio}%</span>
-                            <div class="w-12 bg-slate-100 rounded-full h-1.5">
-                                <div class="bg-indigo-600 h-1.5 rounded-full" style="width: ${Math.min(itemRatio, 100)}%"></div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold">${itemRatio}%</span>
+                            <div class="w-12 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                                <div class="bg-emerald-500 h-full" style="width: ${Math.min(itemRatio, 100)}%"></div>
                             </div>
                         </div>
                     </td>
                     <td class="py-3 px-4 text-center">
-                        <button onclick="openEditBudgetModal('${item.id}')" class="text-slate-400 hover:text-indigo-600 font-bold text-[10px] px-2 py-1 bg-slate-100 hover:bg-slate-200/80 rounded transition-all">편집</button>
+                        <button onclick="openEditBudgetItemModal('${item.id}')" class="text-indigo-600 hover:text-indigo-900 font-bold mr-2"><i class="fa-solid fa-pen-to-square"></i> 편집</button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -1777,149 +1362,127 @@
         }
     }
 
-    function switchBudgetTab(tabName) {
-        activeBudgetTab = tabName;
-        
-        document.querySelectorAll('.budget-tab-btn').forEach(btn => {
-            btn.className = "budget-tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all";
-        });
-
-        const activeBtn = document.getElementById(`budget-tab-${tabName}`);
-        if (activeBtn) {
-            let dotColor = "bg-blue-300";
-            if (tabName === "청결케어서비스") dotColor = "bg-emerald-300";
-            else if (tabName === "손길나눔공방") dotColor = "bg-orange-300";
-            else if (tabName === "공통행정") dotColor = "bg-purple-300";
-
-            activeBtn.className = `budget-tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white transition-all`;
-        }
-
+    function switchBudgetTab(unitName) {
+        activeBudgetUnit = unitName;
         renderBudgetView();
     }
 
     // ----------------------------------------------------
-    // 7. DIALOGS / WINDOWS MODAL CONTROLLERS
+    // 6. Sidebar D-Day calculation Engine
     // ----------------------------------------------------
-    function openModal(modalId) {
-        const modal = document.getElementById(modalId);
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modal.classList.remove('opacity-0');
-            modal.querySelector('div').classList.remove('scale-95');
-        }, 50);
-    }
+    function renderDDayList() {
+        const ddayContainer = document.getElementById('sidebar-dday-list');
+        ddayContainer.innerHTML = '';
 
-    // Modal background layout closing fix
-    function closeModal(modalId) {
-        const modal = document.getElementById(modalId);
-        modal.classList.add('opacity-0');
-        modal.querySelector('div').classList.add('scale-95');
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 200);
-    }
+        const today = new Date(); // Link directly with live system date
+        today.setHours(0, 0, 0, 0); // Clear hour details for calculation accuracy
 
-    // WEATHER WIDGET MODAL HANDLERS
-    function editWeatherAlert() {
-        document.getElementById('weatherInput').value = weatherAlertData.text;
-        document.getElementById('weatherSeverity').value = weatherAlertData.severity;
-        openModal('weatherModal');
-    }
+        // Calculate and sort deadlines to find top 2
+        const computedList = adminDeadlines.map(dl => {
+            const target = new Date(dl.date);
+            const diffDays = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+            return { ...dl, diffDays };
+        }).filter(dl => dl.diffDays >= 0);
 
-    function closeWeatherModal() {
-        closeModal('weatherModal');
-    }
+        // Sort ascending
+        computedList.sort((a, b) => a.diffDays - b.diffDays);
 
-    function saveWeatherAlert() {
-        const text = document.getElementById('weatherInput').value;
-        const severity = document.getElementById('weatherSeverity').value;
+        const sliced = computedList.slice(0, 2);
 
-        weatherAlertData = { text, severity };
-
-        // Render in header widget
-        document.getElementById('weatherAlertText').innerText = text;
-        const dot = document.getElementById('weatherStatusDot');
-        
-        if (severity === 'normal') {
-            dot.className = "inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse";
-        } else if (severity === 'caution') {
-            dot.className = "inline-flex h-2 w-2 rounded-full bg-amber-500 animate-pulse";
-        } else if (severity === 'danger') {
-            dot.className = "inline-flex h-2 w-2 rounded-full bg-rose-600 animate-pulse";
+        if(sliced.length === 0) {
+            ddayContainer.innerHTML = `<div class="text-[11px] text-slate-400 italic">임박 마감 일정 없음</div>`;
+        } else {
+            sliced.forEach(item => {
+                const box = document.createElement('div');
+                box.className = "flex justify-between items-center border-b border-indigo-100/50 pb-1.5 last:border-b-0 last:pb-0";
+                box.innerHTML = `
+                    <span class="font-bold text-slate-800 text-[11px] truncate w-32" title="${item.title}">${item.title}</span>
+                    <span class="bg-red-100 text-red-700 font-bold px-1.5 py-0.5 rounded text-[9px]">D-${item.diffDays}</span>
+                `;
+                ddayContainer.appendChild(box);
+            });
         }
-
-        closeWeatherModal();
     }
 
-    // SCHEDULE MODAL HANDLERS
-    function openAddModal(typePreset = null) {
+    // ----------------------------------------------------
+    // 7. Dialogue Modals Handlers
+    // ----------------------------------------------------
+    
+    // Schedule Event Modals
+    function openAddModal(type = 'work') {
         document.getElementById('scheduleForm').reset();
         document.getElementById('event-id').value = '';
-        document.getElementById('btn-delete').classList.add('hidden');
-        document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-calendar-plus"></i> <span>신규 운영 일정 등록</span>';
-        
-        // Set date field to active workspace date
-        document.getElementById('event-date').value = getYYYYMMDD(currentDate);
-
-        if (typePreset) {
-            document.getElementById('event-type').value = typePreset;
-        }
-
+        document.getElementById('event-date').value = currentSelectedDate;
+        document.getElementById('event-type').value = type;
+        document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-calendar-plus"></i> <span>새 일정 등록</span>';
+        document.getElementById('btn-delete-event').classList.add('hidden');
         toggleEduDetailsVisibility();
-        openModal('scheduleModal');
+        
+        showModal('scheduleModal');
     }
 
-    function openEditModal(eventId) {
-        const evt = events.find(e => e.id === eventId);
-        if (!evt) return;
+    function openAddModalWithDate(targetDate) {
+        openAddModal();
+        document.getElementById('event-date').value = targetDate;
+    }
 
-        document.getElementById('event-id').value = evt.id;
-        document.getElementById('event-unit').value = evt.unit;
-        document.getElementById('event-type').value = evt.type;
-        document.getElementById('event-title').value = evt.title;
-        document.getElementById('event-date').value = evt.date;
-        document.getElementById('event-start').value = evt.start;
-        document.getElementById('event-end').value = evt.end || '';
-        document.getElementById('event-location').value = evt.location || '';
-        document.getElementById('event-target').value = evt.target || '';
-        document.getElementById('event-notes').value = evt.notes || '';
+    function openEditModal(eventObj) {
+        document.getElementById('event-id').value = eventObj.id;
+        document.getElementById('event-unit').value = eventObj.unit;
+        document.getElementById('event-type').value = eventObj.type;
+        document.getElementById('event-title').value = eventObj.title;
+        document.getElementById('event-date').value = eventObj.date;
+        document.getElementById('event-start').value = eventObj.start;
+        document.getElementById('event-end').value = eventObj.end || '';
+        document.getElementById('event-location').value = eventObj.location || '';
+        document.getElementById('event-target').value = eventObj.target || '';
+        document.getElementById('event-notes').value = eventObj.notes || '';
         
-        // Radio logic for status
-        const radios = document.getElementsByName('event-status');
-        radios.forEach(r => {
-            if (r.value === evt.status) r.checked = true;
+        // Radio logic
+        const statusValue = eventObj.status || '예정';
+        document.querySelectorAll('input[name="event-status"]').forEach(radio => {
+            radio.checked = radio.value === statusValue;
         });
 
-        // Edu extra inputs
-        if (evt.type === 'edu_business' || evt.type === 'edu_personal') {
-            document.getElementById('edu-target-count').value = evt.eduTargetCount || '';
-            document.getElementById('edu-completed-count').value = evt.eduCompletedCount || '';
+        // Edu Section
+        if (eventObj.type === 'edu_business') {
+            document.getElementById('edu-target-count').value = eventObj.eduTarget || '';
+            document.getElementById('edu-completed-count').value = eventObj.eduCompleted || '';
+        } else {
+            document.getElementById('edu-target-count').value = '';
+            document.getElementById('edu-completed-count').value = '';
         }
 
-        document.getElementById('btn-delete').classList.remove('hidden');
-        document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-calendar-check"></i> <span>기존 일정 상세 관리</span>';
-        
+        document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-calendar-minus"></i> <span>일정 수정</span>';
+        document.getElementById('btn-delete-event').classList.remove('hidden');
         toggleEduDetailsVisibility();
-        openModal('scheduleModal');
+
+        showModal('scheduleModal');
     }
 
+    function openEditModalById(id) {
+        const found = events.find(e => e.id === id);
+        if(found) openEditModal(found);
+    }
+
+    // Close Modals
     function closeScheduleModal() {
-        closeModal('scheduleModal');
+        hideModal('scheduleModal');
     }
 
     function toggleEduDetailsVisibility() {
-        const type = document.getElementById('event-type').value;
-        const section = document.getElementById('edu-details-section');
-        if (type === 'edu_business') {
-            section.classList.remove('hidden');
+        const selectedType = document.getElementById('event-type').value;
+        const details = document.getElementById('edu-details-section');
+        if (selectedType === 'edu_business') {
+            details.classList.remove('hidden');
         } else {
-            section.classList.add('hidden');
+            details.classList.add('hidden');
         }
     }
 
     function saveSchedule(e) {
         e.preventDefault();
-
+        
         const id = document.getElementById('event-id').value;
         const unit = document.getElementById('event-unit').value;
         const type = document.getElementById('event-type').value;
@@ -1930,152 +1493,273 @@
         const location = document.getElementById('event-location').value;
         const target = document.getElementById('event-target').value;
         const notes = document.getElementById('event-notes').value;
-        
-        // Radios status selection
-        let status = '예정';
-        const statusRadios = document.getElementsByName('event-status');
-        for (let i = 0; i < statusRadios.length; i++) {
-            if (statusRadios[i].checked) {
-                status = statusRadios[i].value;
-                break;
-            }
-        }
+        const status = document.querySelector('input[name="event-status"]:checked').value;
 
-        const extraEdu = {};
+        const eventData = {
+            id: id || 'ev-' + Date.now(),
+            unit, type, title, date, start, end, location, target, notes, status
+        };
+
         if (type === 'edu_business') {
-            extraEdu.eduTargetCount = Number(document.getElementById('edu-target-count').value) || 0;
-            extraEdu.eduCompletedCount = Number(document.getElementById('edu-completed-count').value) || 0;
+            eventData.eduTarget = parseInt(document.getElementById('edu-target-count').value) || 0;
+            eventData.eduCompleted = parseInt(document.getElementById('edu-completed-count').value) || 0;
         }
 
         if (id) {
-            // Update
             const index = events.findIndex(e => e.id === id);
-            if (index !== -1) {
-                events[index] = {
-                    id, unit, type, title, date, start, end, location, target, notes, status, ...extraEdu
-                };
-            }
+            if (index !== -1) events[index] = eventData;
         } else {
-            // Create New
-            events.push({
-                id: 'evt-' + Date.now(),
-                unit, type, title, date, start, end, location, target, notes, status, ...extraEdu
-            });
+            events.push(eventData);
         }
 
         closeScheduleModal();
-        renderWorkspace();
+        renderAllViews();
     }
 
     function deleteSchedule() {
         const id = document.getElementById('event-id').value;
-        if (!id) return;
-
-        if (confirm('이 운영 일정을 시스템에서 최종 영구 삭제 처리하시겠습니까?')) {
-            events = events.filter(e => e.id !== id);
-            closeScheduleModal();
-            renderWorkspace();
+        if (id) {
+            triggerCustomConfirm("일정 삭제", "정말로 이 일정을 영구적으로 삭제하시겠습니까?", () => {
+                events = events.filter(e => e.id !== id);
+                closeScheduleModal();
+                renderAllViews();
+            });
         }
     }
 
-    // ALLOCATION TOTAL DIRECT EDIT
-    function editUnitAllocatedBudget() {
-        document.getElementById('unitBudgetModalTitle').innerText = `${activeBudgetTab} 배정 예산 변경`;
-        document.getElementById('unitBudgetAllocatedInput').value = budgetAllocations[activeBudgetTab] || 0;
-        openModal('unitBudgetModal');
+    // Weather Widget Modal
+    function editWeatherAlert() {
+        document.getElementById('weather-alert-input').value = weatherStatus.alertText;
+        document.getElementById('weather-status-select').value = weatherStatus.type;
+        showModal('weatherModal');
     }
 
-    function closeUnitBudgetModal() {
-        closeModal('unitBudgetModal');
+    function closeWeatherModal() {
+        hideModal('weatherModal');
     }
 
-    function saveUnitBudgetModal() {
-        const val = Number(document.getElementById('unitBudgetAllocatedInput').value);
-        budgetAllocations[activeBudgetTab] = val;
-        closeUnitBudgetModal();
-        renderBudgetView();
+    function saveWeatherAlert() {
+        const val = document.getElementById('weather-alert-input').value;
+        const type = document.getElementById('weather-status-select').value;
+        
+        weatherStatus.alertText = val;
+        weatherStatus.type = type;
+
+        const widget = document.getElementById('weatherAlert');
+        const dot = document.getElementById('weatherStatusDot');
+        const text = document.getElementById('weatherAlertText');
+
+        text.textContent = val;
+
+        // Class toggling
+        dot.className = "inline-flex h-2 w-2 rounded-full animate-pulse ";
+        widget.className = "px-4 py-1.5 rounded-lg border text-xs flex items-center gap-2 ";
+
+        if (type === 'safe') {
+            dot.className += "bg-emerald-400";
+            widget.className += "bg-indigo-800/80 border-indigo-700 text-indigo-100";
+        } else if (type === 'caution') {
+            dot.className += "bg-amber-400";
+            widget.className += "bg-amber-900/80 border-amber-700 text-amber-100";
+        } else {
+            dot.className += "bg-rose-500";
+            widget.className += "bg-rose-950 border-rose-800 text-rose-100";
+        }
+
+        closeWeatherModal();
     }
 
-    // INDIVIDUAL BUDGET ITEMS ADD & EDIT
+    // Incident Modal
+    function openIncidentModal() {
+        document.getElementById('incidentForm').reset();
+        document.getElementById('incident-time').value = new Date().toISOString().substring(0, 16);
+        showModal('incidentModal');
+    }
+
+    function closeIncidentModal() {
+        hideModal('incidentModal');
+    }
+
+    function saveIncident(e) {
+        e.preventDefault();
+        const unit = document.getElementById('incident-unit').value;
+        const time = document.getElementById('incident-time').value;
+        const text = document.getElementById('incident-text').value;
+
+        incidents.push({
+            id: 'inc-' + Date.now(),
+            unit, time, text
+        });
+
+        closeIncidentModal();
+        renderDailyView();
+    }
+
+    // Incident Log Delete
+    function deleteIncident(id) {
+        triggerCustomConfirm("돌발 보고 삭제", "기록 대장에서 이 특이사항을 삭제하시겠습니까?", () => {
+            incidents = incidents.filter(i => i.id !== id);
+            renderDailyView();
+        });
+    }
+
+    // Admin Deadline Modal
+    function openAdminDeadlineModal() {
+        document.getElementById('adminDeadlineForm').reset();
+        document.getElementById('admin-deadline-id').value = '';
+        showModal('adminDeadlineModal');
+    }
+
+    function closeAdminDeadlineModal() {
+        hideModal('adminDeadlineModal');
+    }
+
+    function saveAdminDeadline(e) {
+        e.preventDefault();
+        const id = document.getElementById('admin-deadline-id').value;
+        const title = document.getElementById('admin-deadline-title').value;
+        const date = document.getElementById('admin-deadline-date').value;
+        const notes = document.getElementById('admin-deadline-notes').value;
+
+        const dlData = { id: id || 'dl-' + Date.now(), title, date, notes };
+
+        if (id) {
+            const index = adminDeadlines.findIndex(dl => dl.id === id);
+            if (index !== -1) adminDeadlines[index] = dlData;
+        } else {
+            adminDeadlines.push(dlData);
+        }
+
+        closeAdminDeadlineModal();
+        renderAdminEduView();
+    }
+
+    function editAdminDeadline(id) {
+        const found = adminDeadlines.find(dl => dl.id === id);
+        if(found) {
+            document.getElementById('admin-deadline-id').value = found.id;
+            document.getElementById('admin-deadline-title').value = found.title;
+            document.getElementById('admin-deadline-date').value = found.date;
+            document.getElementById('admin-deadline-notes').value = found.notes || '';
+            showModal('adminDeadlineModal');
+        }
+    }
+
+    function deleteAdminDeadline(id) {
+        triggerCustomConfirm("행정 마감 삭제", "이 마감 일정을 대장에서 영구 삭제할까요?", () => {
+            adminDeadlines = adminDeadlines.filter(dl => dl.id !== id);
+            renderAdminEduView();
+        });
+    }
+
+    // Budget Item Modal
     function openBudgetModalFromActiveTab() {
-        document.getElementById('budgetForm').reset();
+        document.getElementById('budgetItemForm').reset();
         document.getElementById('budget-item-id').value = '';
-        document.getElementById('budget-item-unit').value = activeBudgetTab;
-        document.getElementById('budget-item-unit-display').value = activeBudgetTab;
-        
-        document.getElementById('btn-budget-delete').classList.add('hidden');
-        document.getElementById('budgetModalTitle').innerText = `${activeBudgetTab} 새 예산 품목 등록`;
-        
-        openModal('budgetModal');
+        document.getElementById('budget-item-unit').value = activeBudgetUnit;
+        document.getElementById('budget-item-unit-display').value = activeBudgetUnit;
+        document.getElementById('btn-delete-budget-item').classList.add('hidden');
+        showModal('budgetItemModal');
     }
 
-    function openEditBudgetModal(itemId) {
-        const item = budgetItems.find(bi => bi.id === itemId);
-        if (!item) return;
-
-        document.getElementById('budget-item-id').value = item.id;
-        document.getElementById('budget-item-unit').value = item.unit;
-        document.getElementById('budget-item-unit-display').value = item.unit;
-        document.getElementById('budget-item-name').value = item.name;
-        document.getElementById('budget-item-allocated').value = item.allocated;
-        document.getElementById('budget-item-used').value = item.used;
-
-        document.getElementById('btn-budget-delete').classList.remove('hidden');
-        document.getElementById('budgetModalTitle').innerText = '예산 품목 수정 / 정산';
-        
-        openModal('budgetModal');
+    function openEditBudgetItemModal(id) {
+        const found = budgetItems.find(b => b.id === id);
+        if (found) {
+            document.getElementById('budget-item-id').value = found.id;
+            document.getElementById('budget-item-unit').value = found.unit;
+            document.getElementById('budget-item-unit-display').value = found.unit;
+            document.getElementById('budget-item-name').value = found.name;
+            document.getElementById('budget-item-allocated').value = found.allocated;
+            document.getElementById('budget-item-used').value = found.used || 0;
+            
+            document.getElementById('btn-delete-budget-item').classList.remove('hidden');
+            showModal('budgetItemModal');
+        }
     }
 
-    function closeBudgetModal() {
-        closeModal('budgetModal');
+    function closeBudgetItemModal() {
+        hideModal('budgetItemModal');
     }
 
     function saveBudgetItem(e) {
         e.preventDefault();
-
         const id = document.getElementById('budget-item-id').value;
         const unit = document.getElementById('budget-item-unit').value;
         const name = document.getElementById('budget-item-name').value;
-        const allocated = Number(document.getElementById('budget-item-allocated').value);
-        const used = Number(document.getElementById('budget-item-used').value);
+        const allocated = parseInt(document.getElementById('budget-item-allocated').value) || 0;
+        const used = parseInt(document.getElementById('budget-item-used').value) || 0;
+
+        const bData = { id: id || 'b-' + Date.now(), unit, name, allocated, used };
 
         if (id) {
-            const index = budgetItems.findIndex(bi => bi.id === id);
-            if (index !== -1) {
-                budgetItems[index] = { id, unit, name, allocated, used };
-            }
+            const index = budgetItems.findIndex(b => b.id === id);
+            if(index !== -1) budgetItems[index] = bData;
         } else {
-            budgetItems.push({
-                id: 'bi-' + Date.now(),
-                unit,
-                name,
-                allocated,
-                used
-            });
+            budgetItems.push(bData);
         }
 
-        closeBudgetModal();
+        closeBudgetItemModal();
         renderBudgetView();
     }
 
+    // Delete Budget Item
     function deleteBudgetItem() {
         const id = document.getElementById('budget-item-id').value;
-        if (!id) return;
-
-        if (confirm('이 세부 예산 집행 품목을 영구적으로 삭제하시겠습니까?')) {
-            budgetItems = budgetItems.filter(bi => bi.id !== id);
-            closeBudgetModal();
-            renderBudgetView();
+        if (id) {
+            triggerCustomConfirm("예산 품목 삭제", "이 세부 품목 예산을 정산 목록에서 제외하시겠습니까?", () => {
+                budgetItems = budgetItems.filter(b => b.id !== id);
+                closeBudgetItemModal();
+                renderBudgetView();
+            });
         }
     }
 
-    // Helper: Formatter YYYY-MM-DD
-    function getYYYYMMDD(d) {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
+    // Annual Allocated Unit Total Modals
+    function editUnitAllocatedBudget() {
+        document.getElementById('unit-budget-target-unit').value = activeBudgetUnit;
+        document.getElementById('unit-budget-total-input').value = unitBudgetTotals[activeBudgetUnit] || 0;
+        showModal('unitBudgetTotalModal');
     }
+
+    function closeUnitBudgetTotalModal() {
+        hideModal('unitBudgetTotalModal');
+    }
+
+    function saveUnitBudgetTotal() {
+        const val = parseInt(document.getElementById('unit-budget-total-input').value) || 0;
+        unitBudgetTotals[activeBudgetUnit] = val;
+        closeUnitBudgetTotalModal();
+        renderBudgetView();
+    }
+
+    // Generic Modal Animation Helpers
+    function showModal(id) {
+        const m = document.getElementById(id);
+        if (!m) return;
+        m.classList.remove('hidden');
+        setTimeout(() => {
+            m.classList.remove('opacity-0');
+            const transformElem = m.querySelector('.transform');
+            if (transformElem) {
+                transformElem.classList.remove('scale-95');
+            }
+        }, 10);
+    }
+
+    // Hide Modal Helper
+    function hideModal(id) {
+        const m = document.getElementById(id);
+        if (!m) return;
+        m.classList.add('opacity-0');
+        const transformElem = m.querySelector('.transform');
+        if (transformElem) {
+            transformElem.classList.add('scale-95');
+        }
+        setTimeout(() => {
+            m.classList.add('hidden');
+        }, 200);
+    }
+
 </script>
 </body>
 </html>
