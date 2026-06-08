@@ -497,1269 +497,1440 @@
             </div>
 
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">상세 내용 및 특이사항 (비고)</label>
-                <textarea id="event-notes" rows="2" placeholder="전달 사항이나 주요 점검 항목 작성" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                <label class="block text-xs font-bold text-slate-500 mb-1">상세 내용 및 비고</label>
+                <textarea id="event-description" placeholder="일정에 대한 세부사항이나 지시사항을 기록하세요." rows="3" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">진행 상태</label>
-                <div class="flex gap-4">
-                    <label class="inline-flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer">
-                        <input type="radio" name="event-status" value="예정" checked class="text-indigo-600 focus:ring-indigo-500"> 예정
-                    </label>
-                    <label class="inline-flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer">
-                        <input type="radio" name="event-status" value="완료" class="text-indigo-600 focus:ring-indigo-500"> 완료
-                    </label>
-                </div>
-            </div>
-
-            <div class="pt-4 border-t border-slate-100 flex justify-between gap-3">
-                <button type="button" id="btn-delete-event" onclick="deleteSchedule()" class="hidden px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs rounded-xl transition-all">삭제</button>
+            <div class="pt-4 flex items-center justify-between gap-3 border-t border-slate-100">
+                <button type="button" onclick="deleteSchedule()" id="btn-delete-schedule" class="hidden bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold transition-all">삭제</button>
                 <div class="flex gap-2 ml-auto">
-                    <button type="button" onclick="closeScheduleModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition-all">취소</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-xl transition-all">저장하기</button>
+                    <button type="button" onclick="closeScheduleModal()" class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-sm font-semibold transition-all">취소</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow-md transition-all">저장하기</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<!-- MODAL: WEATHER STATUS EDIT -->
-<div id="weatherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
-        <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-cloud-sun text-indigo-600 mr-2"></i>오늘의 기상/특이경보 수정</h3>
-        <p class="text-xs text-slate-400">메인 대시보드 우측 상단에 실시간으로 표시될 경보 멘트와 상태 등을 변경합니다.</p>
-        <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1">알림 내용</label>
-            <input type="text" id="weather-alert-input" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1">상태 구분</label>
-            <select id="weather-status-select" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="safe">양호 (정상 활동)</option>
-                <option value="caution">주의 (수시 모니터링)</option>
-                <option value="warning">위험 (실외 활동 제한 권고)</option>
-            </select>
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-            <button onclick="closeWeatherModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
-            <button onclick="saveWeatherAlert()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg">적용</button>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL: INCIDENT LOG -->
+<!-- GLOBAL MODAL: EMERGENCY INCIDENT LOG -->
 <div id="incidentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
-        <h3 class="text-lg font-bold text-red-600"><i class="fa-solid fa-kit-medical mr-2"></i>긴급 및 특이사항 등록</h3>
-        <form id="incidentForm" onsubmit="saveIncident(event)" class="space-y-3">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-200">
+        <div class="bg-red-600 text-white p-5 flex justify-between items-center">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="fa-solid fa-kit-medical animate-bounce"></i>
+                <span>긴급/특이사항 등록</span>
+            </h3>
+            <button onclick="closeIncidentModal()" class="text-white hover:text-red-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <form id="incidentForm" onsubmit="saveIncident(event)" class="p-6 space-y-4">
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">관련 사업단</label>
-                <select id="incident-unit" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+                <label class="block text-xs font-bold text-slate-500 mb-1">해당 사업단 *</label>
+                <select id="incident-unit" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
                     <option value="복지시설도우미">복지시설도우미</option>
                     <option value="청결케어서비스">청결케어서비스</option>
                     <option value="손길나눔공방">손길나눔공방</option>
-                    <option value="공통행정">공통행정</option>
+                    <option value="공통행정">공통 행정</option>
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">일자 및 시각</label>
-                <input type="datetime-local" id="incident-time" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+                <label class="block text-xs font-bold text-slate-500 mb-1">발생 유형 *</label>
+                <select id="incident-type" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
+                    <option value="사고/상해">현장 부상 / 안전 사고</option>
+                    <option value="민원/갈등">주민 민원 / 참여자 갈등</option>
+                    <option value="물품분실/파손">공용 물품 분실 및 파손</option>
+                    <option value="무단결근/이탈">지속적 무단결근 및 이탈</option>
+                    <option value="기타">기타 중요 현장 특이사항</option>
+                </select>
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">내용 / 대처 방안</label>
-                <textarea id="incident-text" required rows="3" placeholder="예: 야외 정화 작업 중 참여자 어르신 미끄러짐으로 경미한 무릎 타박상 보건실 조치 및 귀가 완료" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                <label class="block text-xs font-bold text-slate-500 mb-1">발생 일자 *</label>
+                <input type="date" id="incident-date" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500">
             </div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="closeIncidentModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
-                <button type="submit" class="px-4 py-2 bg-red-600 text-white text-xs font-semibold rounded-lg">등록하기</button>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">상세 설명 *</label>
+                <textarea id="incident-text" required placeholder="예: 복지시설도우미 김ㅇㅇ 어르신 활동 중 계단에서 미끄러짐 발생. 즉시 인근 병원 이송 및 보호자 연락 완료." rows="3" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-red-500"></textarea>
+            </div>
+            <div class="pt-4 flex justify-end gap-2 border-t border-slate-100">
+                <button type="button" onclick="closeIncidentModal()" class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-sm font-semibold transition-all">취소</button>
+                <button type="submit" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-sm font-semibold shadow-md transition-all">등록하기</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- MODAL: ADMIN DEADLINE -->
-<div id="adminDeadlineModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
-        <h3 class="text-lg font-bold text-purple-700"><i class="fa-solid fa-clipboard-list mr-2"></i>공통 연간 행정 일정 추가</h3>
-        <form id="adminDeadlineForm" onsubmit="saveAdminDeadline(event)" class="space-y-3">
-            <input type="hidden" id="admin-deadline-id">
+<!-- GLOBAL MODAL: BUDGET ITEM -->
+<div id="budgetModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-200">
+        <div class="bg-emerald-800 text-white p-5 flex justify-between items-center">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="fa-solid fa-coins"></i>
+                <span id="budgetModalTitle">새 예산 품목 등록</span>
+            </h3>
+            <button onclick="closeBudgetModal()" class="text-white hover:text-emerald-200"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <form id="budgetForm" onsubmit="saveBudgetItem(event)" class="p-6 space-y-4">
+            <input type="hidden" id="budget-id">
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">행정 업무명 *</label>
-                <input type="text" id="admin-deadline-title" required placeholder="예: 2분기 간담회 보고서 마감" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+                <label class="block text-xs font-bold text-slate-500 mb-1">대상 사업단 *</label>
+                <select id="budget-unit" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                    <option value="복지시설도우미">복지시설도우미</option>
+                    <option value="청결케어서비스">청결케어서비스</option>
+                    <option value="손길나눔공방">손길나눔공방</option>
+                    <option value="공통행정">공통 행정</option>
+                </select>
             </div>
             <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">마감 기한일 *</label>
-                <input type="date" id="admin-deadline-date" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">비고 및 세부 조건</label>
-                <input type="text" id="admin-deadline-notes" placeholder="예: 시스템 업로드 필수" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
-            </div>
-            <div class="flex justify-end gap-2 pt-2">
-                <button type="button" onclick="closeAdminDeadlineModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
-                <button type="submit" class="px-4 py-2 bg-purple-600 text-white text-xs font-semibold rounded-lg">저장</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- MODAL: BUDGET ITEM -->
-<div id="budgetItemModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
-        <h3 class="text-lg font-bold text-emerald-700"><i class="fa-solid fa-coins mr-2"></i>예산 상세 품목 관리</h3>
-        <form id="budgetItemForm" onsubmit="saveBudgetItem(event)" class="space-y-3">
-            <input type="hidden" id="budget-item-id">
-            <input type="hidden" id="budget-item-unit">
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">사업단</label>
-                <input type="text" id="budget-item-unit-display" disabled class="w-full bg-slate-100 border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-500">
-            </div>
-            <div>
-                <label class="block text-xs font-bold text-slate-500 mb-1">예산 품목명 *</label>
-                <input type="text" id="budget-item-name" required placeholder="예: 참여자 보수 교육 강사료, 홍보 물품 구입" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+                <label class="block text-xs font-bold text-slate-500 mb-1">품목명 (예산 항목) *</label>
+                <input type="text" id="budget-title" required placeholder="예: 혹서기 쿨스카프 구입" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
             </div>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">집행 배정 예산 (원) *</label>
-                    <input type="number" id="budget-item-allocated" required placeholder="0" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">배정 예산 (원) *</label>
+                    <input type="number" id="budget-allocated" required placeholder="1200000" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">집행 완료 금액 (원)</label>
-                    <input type="number" id="budget-item-used" placeholder="0" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm">
+                    <label class="block text-xs font-bold text-slate-500 mb-1">집행 완료액 (사용액, 원) *</label>
+                    <input type="number" id="budget-used" required placeholder="850000" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                 </div>
             </div>
-            <div class="flex justify-between gap-2 pt-2">
-                <button type="button" id="btn-delete-budget-item" onclick="deleteBudgetItem()" class="hidden px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold text-xs rounded-xl transition-all">삭제</button>
+            <div class="pt-4 flex justify-between gap-2 border-t border-slate-100">
+                <button type="button" onclick="deleteBudgetItem()" id="btn-delete-budget" class="hidden bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold transition-all">삭제</button>
                 <div class="flex gap-2 ml-auto">
-                    <button type="button" onclick="closeBudgetItemModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg">품목 적용</button>
+                    <button type="button" onclick="closeBudgetModal()" class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-sm font-semibold transition-all">취소</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-semibold shadow-md transition-all">저장하기</button>
                 </div>
             </div>
         </form>
     </div>
 </div>
 
-<!-- MODAL: UNIT TOTAL BUDGET EDIT -->
-<div id="unitBudgetTotalModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
-        <h3 class="text-lg font-bold text-slate-800"><i class="fa-solid fa-wallet text-indigo-600 mr-2"></i>사업단 배정 예산 총액 변경</h3>
-        <p class="text-xs text-slate-400">품목 배정과 무관한 사업단 자체의 연간 총 예산 설정 한도를 제어합니다.</p>
-        <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1">대상 사업단</label>
-            <input type="text" id="unit-budget-target-unit" disabled class="w-full bg-slate-100 border border-slate-200 px-3 py-2 rounded-lg text-sm text-slate-500">
+<!-- GLOBAL MODAL: ADMIN DEADLINE -->
+<div id="adminDeadlineModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl overflow-hidden transform scale-95 transition-transform duration-200">
+        <div class="bg-purple-900 text-white p-5 flex justify-between items-center">
+            <h3 class="text-lg font-bold flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <span id="adminDeadlineModalTitle">연간 행정 일정 등록</span>
+            </h3>
+            <button onclick="closeAdminDeadlineModal()" class="text-white hover:text-purple-200"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
-        <div>
-            <label class="block text-xs font-bold text-slate-500 mb-1">연간 총 배정 예산액 (원)</label>
-            <input type="number" id="unit-budget-total-input" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-            <button onclick="closeUnitBudgetTotalModal()" class="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg">취소</button>
-            <button onclick="saveUnitBudgetTotal()" class="px-4 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-lg">변경 사항 적용</button>
-        </div>
-    </div>
-</div>
-
-<!-- CUSTOM CONFIRMATION MODAL -->
-<div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex items-center justify-center hidden opacity-0 transition-opacity duration-200">
-    <div class="bg-white w-full max-w-sm rounded-2xl shadow-xl overflow-hidden p-6 space-y-4 transform scale-95 transition-transform duration-200">
-        <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-circle-question text-amber-500"></i>
-            <span id="confirmTitle">확인</span>
-        </h3>
-        <p class="text-xs text-slate-500 leading-relaxed" id="confirmMessage">이 작업을 정말 진행하시겠습니까?</p>
-        <div class="flex justify-end gap-2 pt-2">
-            <button id="confirmCancelBtn" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-all">취소</button>
-            <button id="confirmOkBtn" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold rounded-lg transition-all">확인</button>
-        </div>
-    </div>
-</div>
-
-<!-- JavaScript Core Logic -->
-<script>
-    // ----------------------------------------------------
-    // Helper: Get Live System Today Date String (YYYY-MM-DD)
-    // ----------------------------------------------------
-    function getTodayDateString() {
-        const d = new Date();
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    // ----------------------------------------------------
-    // 1. Initial State Data (Synced with live system clock)
-    // ----------------------------------------------------
-    let currentView = 'monthly';
-    
-    // Initialize starting variables directly from computer system clock
-    let currentSelectedDate = getTodayDateString(); 
-    const systemDateObj = new Date();
-    let currentYear = systemDateObj.getFullYear();
-    let currentMonth = systemDateObj.getMonth() + 1;
-    
-    let activeUnitFilter = null;
-    let activeBudgetUnit = '복지시설도우미';
-    let activeEduTab = 'business'; // 'business' (참여자 교육), 'personal' (담당자 교육)
-
-    // Cleared Seed Datasets - Ready for User Direct Inputs
-    let events = [];
-    let incidents = [];
-    let checklists = [];
-    let adminDeadlines = [];
-    let budgetItems = [];
-
-    // Base default configurations for Annual Allocated Budgets
-    let unitBudgetTotals = {
-        '복지시설도우미': 0,
-        '청결케어서비스': 0,
-        '손길나눔공방': 0,
-        '공통행정': 0
-    };
-
-    let weatherStatus = {
-        alertText: "오늘의 기상 정보: 양호 (실외 활동 정상 진행)",
-        type: "safe"
-    };
-
-    // Reusable Confirm Callback
-    let confirmCallback = null;
-
-    // ----------------------------------------------------
-    // 2. Lifecycle Initializer
-    // ----------------------------------------------------
-    window.onload = function() {
-        // Build empty baseline states based on user's real today
-        updateAllCounters();
-        renderAllViews();
-        document.getElementById('currentDateDisplay').textContent = getFormattedKoreanDate(getTodayDateString());
-
-        // Bind Confirm Modal Events
-        document.getElementById('confirmCancelBtn').onclick = () => hideModal('confirmModal');
-        document.getElementById('confirmOkBtn').onclick = () => {
-            if (confirmCallback) confirmCallback();
-            hideModal('confirmModal');
-        };
-    };
-
-    function getFormattedKoreanDate(dateStr) {
-        const days = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
-        const d = new Date(dateStr);
-        return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 ${days[d.getDay()]}`;
-    }
-
-    // ----------------------------------------------------
-    // 3. Custom Alert/Confirm Replacement
-    // ----------------------------------------------------
-    function triggerCustomConfirm(title, message, onConfirm) {
-        document.getElementById('confirmTitle').textContent = title;
-        document.getElementById('confirmMessage').textContent = message;
-        confirmCallback = onConfirm;
-        showModal('confirmModal');
-    }
-
-    // ----------------------------------------------------
-    // 4. Navigation & Filtering Systems
-    // ----------------------------------------------------
-    function switchView(viewName) {
-        currentView = viewName;
-        
-        // Handle Sidebar Navigation Styles
-        document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.classList.remove('active', 'text-indigo-600', 'bg-indigo-50');
-            btn.classList.add('text-slate-600', 'hover:bg-slate-50');
-        });
-        const targetBtn = document.getElementById(`btn-view-${viewName}`);
-        if(targetBtn) {
-            targetBtn.classList.remove('text-slate-600', 'hover:bg-slate-50');
-            targetBtn.classList.add('active', 'text-indigo-600', 'bg-indigo-50');
-        }
-
-        // Display/Hide Dynamic Sections
-        document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
-        document.getElementById(`view-section-${viewName}`).classList.remove('hidden');
-
-        renderAllViews();
-    }
-
-    function setUnitFilter(unitName) {
-        activeUnitFilter = unitName;
-        
-        // Update styling of filter buttons
-        document.querySelectorAll('.unit-filter-btn').forEach(btn => {
-            btn.classList.remove('ring-2', 'ring-indigo-600', 'bg-slate-100');
-        });
-        const activeBtn = document.getElementById(`filter-btn-${unitName}`);
-        if(activeBtn) {
-            activeBtn.classList.add('ring-2', 'ring-indigo-600', 'bg-slate-100');
-        }
-
-        document.getElementById('filterStatusText').textContent = `필터: ${unitName}`;
-        document.getElementById('clearFilterBtn').classList.remove('hidden');
-
-        renderAllViews();
-    }
-
-    function resetUnitFilter() {
-        activeUnitFilter = null;
-        document.querySelectorAll('.unit-filter-btn').forEach(btn => {
-            btn.classList.remove('ring-2', 'ring-indigo-600', 'bg-slate-100');
-        });
-        document.getElementById('filterStatusText').textContent = '필터: 모든 사업단';
-        document.getElementById('clearFilterBtn').classList.add('hidden');
-
-        renderAllViews();
-    }
-
-    function changePeriod(direction) {
-        if (currentView === 'monthly') {
-            currentMonth += direction;
-            if (currentMonth > 12) { currentMonth = 1; currentYear++; }
-            if (currentMonth < 1) { currentMonth = 12; currentYear--; }
-            document.getElementById('currentPeriodLabel').textContent = `${currentYear}년 ${currentMonth}월`;
-        } else if (currentView === 'weekly' || currentView === 'daily') {
-            let d = new Date(currentSelectedDate);
-            d.setDate(d.getDate() + (direction * (currentView === 'weekly' ? 7 : 1)));
-            currentSelectedDate = d.toISOString().split('T')[0];
-            currentYear = d.getFullYear();
-            currentMonth = d.getMonth() + 1;
-            document.getElementById('currentPeriodLabel').textContent = `${currentSelectedDate}`;
-        }
-        renderAllViews();
-    }
-
-    function setToday() {
-        const today = new Date(); // Link directly with live system date
-        currentSelectedDate = getTodayDateString();
-        currentYear = today.getFullYear();
-        currentMonth = today.getMonth() + 1;
-        
-        if (currentView === 'monthly') {
-            document.getElementById('currentPeriodLabel').textContent = `${currentYear}년 ${currentMonth}월`;
-        } else {
-            document.getElementById('currentPeriodLabel').textContent = `${currentSelectedDate}`;
-        }
-        renderAllViews();
-    }
-
-    // ----------------------------------------------------
-    // 5. View Rendering Engines
-    // ----------------------------------------------------
-    function renderAllViews() {
-        updateAllCounters();
-        renderDDayList();
-
-        if (currentView === 'monthly') {
-            renderMonthlyView();
-        } else if (currentView === 'weekly') {
-            renderWeeklyView();
-        } else if (currentView === 'daily') {
-            renderDailyView();
-        } else if (currentView === 'admin-edu') {
-            renderAdminEduView();
-        } else if (currentView === 'budget') {
-            renderBudgetView();
-        }
-    }
-
-    function updateAllCounters() {
-        const filtered = getFilteredEvents();
-        document.getElementById('monthly-count').textContent = filtered.length;
-        
-        // Current week count based on currently selected date
-        const weekEvents = events.filter(e => {
-            const date = new Date(e.date);
-            const curr = new Date(currentSelectedDate);
-            const startOfWeek = new Date(curr.setDate(curr.getDate() - curr.getDay()));
-            const endOfWeek = new Date(curr.setDate(curr.getDate() - curr.getDay() + 6));
-            return date >= startOfWeek && date <= endOfWeek;
-        });
-        document.getElementById('weekly-count').textContent = weekEvents.length;
-
-        // Current day count
-        const dayEvents = events.filter(e => e.date === currentSelectedDate);
-        document.getElementById('daily-count').textContent = dayEvents.length;
-    }
-
-    function getFilteredEvents() {
-        if (activeUnitFilter) {
-            return events.filter(e => e.unit === activeUnitFilter);
-        }
-        return events;
-    }
-
-    // 5.1. Monthly Calendar Core Engine
-    function renderMonthlyView() {
-        document.getElementById('monthlyCalendarTitle').textContent = `${currentYear}년 ${currentMonth}월 업무 캘린더`;
-        const grid = document.getElementById('calendarDaysGrid');
-        grid.innerHTML = '';
-
-        const firstDay = new Date(currentYear, currentMonth - 1, 1).getDay();
-        const daysInMonth = new Date(currentYear, currentMonth, 0).getDate();
-
-        // Previous Month Padding Days
-        const prevMonthDays = new Date(currentYear, currentMonth - 1, 0).getDate();
-        for (let i = firstDay - 1; i >= 0; i--) {
-            const padDay = prevMonthDays - i;
-            grid.appendChild(createCalendarDayNode(padDay, true));
-        }
-
-        // Active Month Days
-        for (let day = 1; day <= daysInMonth; day++) {
-            const fullDate = `${currentYear}-${String(currentMonth).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-            const isToday = fullDate === getTodayDateString(); // Compare with actual live computer date
-            grid.appendChild(createCalendarDayNode(day, false, fullDate, isToday));
-        }
-
-        // Next Month Padding Days
-        const totalRendered = firstDay + daysInMonth;
-        const nextPadding = totalRendered % 7 === 0 ? 0 : 7 - (totalRendered % 7);
-        for (let i = 1; i <= nextPadding; i++) {
-            grid.appendChild(createCalendarDayNode(i, true));
-        }
-    }
-
-    function createCalendarDayNode(dayNum, isPadding, dateStr = '', isToday = false) {
-        const cell = document.createElement('div');
-        cell.className = `min-h-[100px] border border-slate-100 rounded-xl p-2 flex flex-col justify-between transition-all relative ${isPadding ? 'bg-slate-50/50 text-slate-300' : 'bg-white hover:shadow-md cursor-pointer'}`;
-        
-        if (isToday) {
-            cell.className += ' ring-2 ring-indigo-600 bg-indigo-50/20';
-        }
-
-        // Header node
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'flex justify-between items-center';
-        
-        const numberSpan = document.createElement('span');
-        numberSpan.className = `text-xs font-bold ${isPadding ? 'text-slate-300' : 'text-slate-700'}`;
-        numberSpan.textContent = dayNum;
-        dayHeader.appendChild(numberSpan);
-
-        if (isToday) {
-            const todayBadge = document.createElement('span');
-            todayBadge.className = 'bg-indigo-600 text-white font-bold text-[8px] px-1.5 py-0.2 rounded-full';
-            todayBadge.textContent = '오늘';
-            dayHeader.appendChild(todayBadge);
-        }
-        cell.appendChild(dayHeader);
-
-        // Events list container within cell
-        if (!isPadding) {
-            const dayEvents = getFilteredEvents().filter(e => e.date === dateStr);
-            const listContainer = document.createElement('div');
-            listContainer.className = 'space-y-1 mt-1 overflow-y-auto max-h-[80px]';
-
-            dayEvents.forEach(e => {
-                const badge = document.createElement('div');
-                badge.className = `text-[9px] px-1.5 py-0.5 rounded font-medium truncate ${getUnitColorStyle(e.unit)}`;
-                badge.textContent = `[${e.start}] ${e.title}`;
-                badge.onclick = (event) => {
-                    event.stopPropagation();
-                    openEditModal(e);
-                };
-                listContainer.appendChild(badge);
-            });
-            cell.appendChild(listContainer);
-
-            // Double Click Handler to create new event targeting selected day
-            cell.ondblclick = () => {
-                openAddModalWithDate(dateStr);
-            };
-            cell.onclick = () => {
-                currentSelectedDate = dateStr;
-                document.getElementById('currentPeriodLabel').textContent = dateStr;
-            };
-        }
-
-        return cell;
-    }
-
-    // Helper: color token mapping
-    function getUnitColorStyle(unit) {
-        switch(unit) {
-            case '복지시설도우미': return 'bg-blue-50 text-blue-700 border-l-2 border-blue-500';
-            case '청결케어서비스': return 'bg-emerald-50 text-emerald-700 border-l-2 border-emerald-500';
-            case '손길나눔공방': return 'bg-orange-50 text-orange-700 border-l-2 border-orange-500';
-            case '공통행정': return 'bg-purple-50 text-purple-700 border-l-2 border-purple-500';
-            case '개인교육': return 'bg-rose-50 text-rose-700 border-l-2 border-rose-500';
-            default: return 'bg-slate-100 text-slate-700 border-l-2 border-slate-500';
-        }
-    }
-
-    // 5.2. Weekly View Drawing Engine
-    function renderWeeklyView() {
-        const grid = document.getElementById('weeklyDaysGrid');
-        grid.innerHTML = '';
-
-        const curr = new Date(currentSelectedDate);
-        const dayOfWeek = curr.getDay(); // 0 is Sunday, 1 is Monday etc.
-        const startOfWeek = new Date(curr.setDate(curr.getDate() - dayOfWeek + 1)); // Anchor to Mon
-
-        const days = ['월', '화', '수', '목', '금'];
-        
-        for (let i = 0; i < 5; i++) {
-            const d = new Date(startOfWeek);
-            d.setDate(startOfWeek.getDate() + i);
-            const dateStr = d.toISOString().split('T')[0];
-            const isToday = dateStr === getTodayDateString(); // Compare with actual live computer date
-
-            const col = document.createElement('div');
-            col.className = `flex-1 bg-white border border-slate-200 rounded-2xl p-4 flex flex-col gap-4 min-h-[400px] ${isToday ? 'ring-2 ring-indigo-600 bg-indigo-50/10' : ''}`;
-
-            col.innerHTML = `
-                <div class="border-b border-slate-100 pb-2">
-                    <span class="text-xs text-slate-400 font-bold">${dateStr}</span>
-                    <h4 class="text-base font-bold text-slate-800">${days[i]}요일</h4>
+        <form id="adminDeadlineForm" onsubmit="saveAdminDeadline(event)" class="p-6 space-y-4">
+            <input type="hidden" id="deadline-id">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1">행정 과업명 *</label>
+                <input type="text" id="deadline-title" required placeholder="예: 참여자 실태조사 및 보조금 정산보고" class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">마감기한 날짜 *</label>
+                    <input type="date" id="deadline-date" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
-                <div class="space-y-2 flex-1 overflow-y-auto" id="weekly-col-${dateStr}"></div>
-            `;
-            grid.appendChild(col);
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">우선 순위 *</label>
+                    <select id="deadline-priority" required class="w-full border border-slate-200 px-3 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        <option value="high">긴급 (High)</option>
+                        <option value="normal">보통 (Normal)</option>
+                        <option value="low">여유 (Low)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pt-4 flex justify-between gap-2 border-t border-slate-100">
+                <button type="button" onclick="deleteAdminDeadline()" id="btn-delete-deadline" class="hidden bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-xl text-sm font-semibold transition-all">삭제</button>
+                <div class="flex gap-2 ml-auto">
+                    <button type="button" onclick="closeAdminDeadlineModal()" class="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-600 rounded-xl text-sm font-semibold transition-all">취소</button>
+                    <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-sm font-semibold shadow-md transition-all">저장하기</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
-            // Infill events
-            const list = col.querySelector(`#weekly-col-${dateStr}`);
-            const dayEvents = getFilteredEvents().filter(e => e.date === dateStr);
-            if(dayEvents.length === 0) {
-                list.innerHTML = `<div class="text-[10px] text-slate-400 italic py-4">일정 없음</div>`;
+<!-- Firebase SDKs -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, addDoc, updateDoc, deleteDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // Global variables & state storage
+    let user = null;
+    let currentYear = 2026;
+    let currentMonth = 5; // June (0-indexed: 0=Jan, 5=Jun)
+    let selectedDateStr = "2026-06-08"; // Default selected date
+    let selectedUnitFilter = null; // Filter logic
+    let activeView = "monthly"; // Tab switcher
+    let activeEduTab = "business"; // Education inside view tab
+    let activeBudgetTab = "복지시설도우미"; // Budget inside view tab
+
+    // Main local cache for live updates
+    let events = [];
+    let checklist = [];
+    let incidents = [];
+    let budgetItems = [];
+    let adminDeadlines = [];
+    let weatherAlertText = "오늘의 기상 정보: 양호 (실외 활동 정상 진행)";
+
+    // Budget assignment memory
+    let unitAllocBudget = {
+        "복지시설도우미": 15000000,
+        "청결케어서비스": 10000000,
+        "손길나눔공방": 12000000,
+        "공통행정": 8000000
+    };
+
+    // Initialize Firebase
+    const firebaseConfig = JSON.parse(__firebase_config);
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'jeongeup-senior-job';
+
+    // Firebase Auth flow (Custom token -> Anonymous fallback)
+    const initAuth = async () => {
+        try {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
             } else {
-                dayEvents.forEach(e => {
-                    const card = document.createElement('div');
-                    card.className = `p-2.5 rounded-xl text-xs font-semibold hover:shadow-sm cursor-pointer transition-all ${getUnitColorStyle(e.unit)}`;
+                await signInAnonymously(auth);
+            }
+        } catch (e) {
+            console.error("Auth initialization failed", e);
+        }
+    };
+    initAuth();
+
+    onAuthStateChanged(auth, (usr) => {
+        user = usr;
+        if (user) {
+            setupLiveListeners();
+        }
+    });
+
+    // Setup Firestore paths and listeners (Rules adhered: strictly inside /artifacts/{appId}/public/data/)
+    function setupLiveListeners() {
+        if (!user) return;
+
+        // Path helpers
+        const getCollectionRef = (name) => collection(db, 'artifacts', appId, 'public', 'data', name);
+
+        // 1. Events collection
+        onSnapshot(getCollectionRef('events'), (snapshot) => {
+            events = [];
+            snapshot.forEach((doc) => {
+                events.push({ id: doc.id, ...doc.data() });
+            });
+            renderAll();
+        }, (err) => console.error("Events fetch failed", err));
+
+        // 2. Checklist collection
+        onSnapshot(getCollectionRef('checklist'), (snapshot) => {
+            checklist = [];
+            snapshot.forEach((doc) => {
+                checklist.push({ id: doc.id, ...doc.data() });
+            });
+            renderChecklist();
+        }, (err) => console.error("Checklist fetch failed", err));
+
+        // 3. Incidents log collection
+        onSnapshot(getCollectionRef('incidents'), (snapshot) => {
+            incidents = [];
+            snapshot.forEach((doc) => {
+                incidents.push({ id: doc.id, ...doc.data() });
+            });
+            renderIncidents();
+        }, (err) => console.error("Incidents fetch failed", err));
+
+        // 4. Budget Items collection
+        onSnapshot(getCollectionRef('budget_items'), (snapshot) => {
+            budgetItems = [];
+            snapshot.forEach((doc) => {
+                budgetItems.push({ id: doc.id, ...doc.data() });
+            });
+            renderBudgetView();
+        }, (err) => console.error("Budget items fetch failed", err));
+
+        // 5. Admin Deadlines collection
+        onSnapshot(getCollectionRef('admin_deadlines'), (snapshot) => {
+            adminDeadlines = [];
+            snapshot.forEach((doc) => {
+                adminDeadlines.push({ id: doc.id, ...doc.data() });
+            });
+            renderAdminDeadlines();
+            renderSidebarDdays();
+        }, (err) => console.error("Admin deadlines fetch failed", err));
+
+        // 6. Global config (for weather and custom allocated budgets)
+        const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'global');
+        onSnapshot(configDocRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.weatherAlertText) {
+                    weatherAlertText = data.weatherAlertText;
+                    document.getElementById("weatherAlertText").innerText = weatherAlertText;
+                    // Change status light color if warning detected
+                    const dot = document.getElementById("weatherStatusDot");
+                    if (weatherAlertText.includes("경보") || weatherAlertText.includes("주의보") || weatherAlertText.includes("악천후")) {
+                        dot.className = "inline-flex h-2 w-2 rounded-full bg-red-500 animate-ping";
+                    } else {
+                        dot.className = "inline-flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse";
+                    }
+                }
+                if (data.unitAllocBudget) {
+                    unitAllocBudget = { ...unitAllocBudget, ...data.unitAllocBudget };
+                    renderBudgetView();
+                }
+            } else {
+                // Set default config
+                setDoc(configDocRef, { weatherAlertText, unitAllocBudget }, { merge: true });
+            }
+        });
+    }
+
+    // Main rendering manager
+    window.renderAll = function() {
+        updateCounts();
+        renderMonthlyCalendar();
+        renderWeeklyCalendar();
+        renderDailyTimeline();
+        renderChecklist();
+        renderIncidents();
+        renderEducationList();
+        renderAdminDeadlines();
+        renderSidebarDdays();
+        renderBudgetView();
+        updatePeriodLabels();
+    };
+
+    function updateCounts() {
+        // Simple client side filters based on current month/year
+        const formatMonth = (currentMonth + 1).toString().padStart(2, '0');
+        const startOfMonth = `${currentYear}-${formatMonth}-01`;
+        const endOfMonth = `${currentYear}-${formatMonth}-31`;
+
+        const filteredEvents = events.filter(e => {
+            if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
+            return e.date >= startOfMonth && e.date <= endOfMonth;
+        });
+
+        document.getElementById("monthly-count").innerText = filteredEvents.length;
+
+        // Weekly (7 days count from selected day)
+        const d = new Date(selectedDateStr);
+        const dayOfWeek = d.getDay(); // Sun = 0
+        const startDiff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Monday start
+        const startOfOfWeek = new Date(d);
+        startOfOfWeek.setDate(d.getDate() + startDiff);
+        
+        const weekDates = [];
+        for (let i = 0; i < 5; i++) { // Monday to Friday
+            const target = new Date(startOfOfWeek);
+            target.setDate(startOfOfWeek.getDate() + i);
+            weekDates.push(target.toISOString().split('T')[0]);
+        }
+
+        const weeklyEvents = events.filter(e => {
+            if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
+            return weekDates.includes(e.date);
+        });
+        document.getElementById("weekly-count").innerText = weeklyEvents.length;
+
+        // Daily Count
+        const dailyEvents = events.filter(e => {
+            if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
+            return e.date === selectedDateStr;
+        });
+        document.getElementById("daily-count").innerText = dailyEvents.length;
+    }
+
+    function updatePeriodLabels() {
+        document.getElementById("currentPeriodLabel").innerText = `${currentYear}년 ${currentMonth + 1}월`;
+        document.getElementById("currentDateDisplay").innerText = `오늘 날짜: 2026년 6월 8일 (월)`;
+        document.getElementById("dailyDateTitle").innerText = `${selectedDateStr} 시간별 일정`;
+    }
+
+    // 1. MONTHLY VIEW CALENDAR
+    function renderMonthlyCalendar() {
+        const grid = document.getElementById("calendarDaysGrid");
+        grid.innerHTML = "";
+
+        // First day of currentMonth
+        const firstDay = new Date(currentYear, currentMonth, 1);
+        const startingDayOfWeek = firstDay.getDay(); // 0 is Sunday
+        const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+        // Prev month padding
+        const prevMonthTotalDays = new Date(currentYear, currentMonth, 0).getDate();
+        for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+            const dayNum = prevMonthTotalDays - i;
+            const container = document.createElement("div");
+            container.className = "bg-slate-50/40 border border-slate-100 p-2 min-h-[90px] rounded-lg text-slate-300 text-xs font-semibold cursor-not-allowed";
+            container.innerText = dayNum;
+            grid.appendChild(container);
+        }
+
+        // Current Month Days
+        for (let day = 1; day <= totalDays; day++) {
+            const formatDay = day.toString().padStart(2, '0');
+            const formatMonth = (currentMonth + 1).toString().padStart(2, '0');
+            const dateStr = `${currentYear}-${formatMonth}-${formatDay}`;
+            const isToday = dateStr === "2026-06-08";
+            const isSelected = dateStr === selectedDateStr;
+
+            // Day of week check
+            const dayOfWeek = new Date(currentYear, currentMonth, day).getDay();
+            let textColor = "text-slate-700";
+            if (dayOfWeek === 0) textColor = "text-red-500";
+            if (dayOfWeek === 6) textColor = "text-blue-500";
+
+            // Filter events for this day
+            const dayEvents = events.filter(e => {
+                if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
+                return e.date === dateStr;
+            });
+
+            const dayDiv = document.createElement("div");
+            dayDiv.onclick = () => {
+                selectedDateStr = dateStr;
+                renderAll();
+            };
+
+            // Double click to add event
+            dayDiv.ondblclick = () => {
+                openAddModal(null, dateStr);
+            };
+
+            // Custom border styles
+            let borderClasses = "border border-slate-200";
+            if (isToday) borderClasses = "border-2 border-indigo-600 bg-indigo-50/30";
+            else if (isSelected) borderClasses = "border-2 border-slate-700 bg-slate-100/50";
+
+            dayDiv.className = `bg-white p-2 min-h-[90px] rounded-xl flex flex-col gap-1 cursor-pointer transition-all hover:shadow-md ${borderClasses}`;
+
+            // Header of day cell
+            const header = document.createElement("div");
+            header.className = "flex justify-between items-center";
+            const numSpan = document.createElement("span");
+            numSpan.className = `text-xs font-bold ${textColor}`;
+            numSpan.innerText = day;
+            header.appendChild(numSpan);
+
+            if (isToday) {
+                const todayBadge = document.createElement("span");
+                todayBadge.className = "text-[9px] bg-indigo-600 text-white px-1.5 py-0.5 rounded font-bold uppercase";
+                todayBadge.innerText = "오늘";
+                header.appendChild(todayBadge);
+            }
+            dayDiv.appendChild(header);
+
+            // Badges layout inside calendar cells
+            const badgesContainer = document.createElement("div");
+            badgesContainer.className = "flex flex-col gap-1 mt-1 overflow-y-auto max-h-[60px]";
+            
+            dayEvents.slice(0, 3).forEach(ev => {
+                const badge = document.createElement("div");
+                let colorClass = "bg-slate-100 text-slate-800 border-slate-200";
+                if (ev.unit === "복지시설도우미") colorClass = "bg-blue-50 text-blue-800 border-blue-200";
+                else if (ev.unit === "청결케어서비스") colorClass = "bg-emerald-50 text-emerald-800 border-emerald-200";
+                else if (ev.unit === "손길나눔공방") colorClass = "bg-orange-50 text-orange-800 border-orange-200";
+                else if (ev.unit === "공통행정") colorClass = "bg-purple-50 text-purple-800 border-purple-200";
+                else if (ev.unit === "개인교육") colorClass = "bg-rose-50 text-rose-800 border-rose-200";
+
+                badge.className = `text-[9px] px-1.5 py-0.5 rounded border truncate font-medium ${colorClass}`;
+                badge.innerText = `[${ev.start}] ${ev.title}`;
+                badge.title = ev.title;
+                badge.onclick = (event) => {
+                    event.stopPropagation(); // prevent calendar click
+                    openEditModal(ev);
+                };
+                badgesContainer.appendChild(badge);
+            });
+
+            // If more than 3 events
+            if (dayEvents.length > 3) {
+                const moreLabel = document.createElement("span");
+                moreLabel.className = "text-[8px] text-slate-400 font-bold self-end";
+                moreLabel.innerText = `+${dayEvents.length - 3}건 더`;
+                badgesContainer.appendChild(moreLabel);
+            }
+
+            dayDiv.appendChild(badgesContainer);
+            grid.appendChild(dayDiv);
+        }
+    }
+
+    // 2. WEEKLY VIEW (Mon-Fri Layout)
+    function renderWeeklyCalendar() {
+        const grid = document.getElementById("weeklyDaysGrid");
+        grid.innerHTML = "";
+
+        const currentSelDate = new Date(selectedDateStr);
+        const dayOfWeek = currentSelDate.getDay(); // Sun = 0
+        const startDiff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Mon Start
+        const startOfWeek = new Date(currentSelDate);
+        startOfWeek.setDate(currentSelDate.getDate() + startDiff);
+
+        // Render Mon-Fri Column Cards
+        const weekdays = ["월", "화", "수", "목", "금"];
+        for (let i = 0; i < 5; i++) {
+            const currentDayDate = new Date(startOfWeek);
+            currentDayDate.setDate(startOfWeek.getDate() + i);
+            const dateStr = currentDayDate.toISOString().split('T')[0];
+
+            const column = document.createElement("div");
+            const isSelected = dateStr === selectedDateStr;
+            const isToday = dateStr === "2026-06-08";
+
+            let borderClasses = "border-slate-200";
+            if (isToday) borderClasses = "border-2 border-indigo-600 bg-indigo-50/10";
+            else if (isSelected) borderClasses = "border-2 border-slate-700 bg-slate-50/40";
+
+            column.className = `bg-white p-4 rounded-2xl border ${borderClasses} flex flex-col gap-4 flex-1 min-h-[400px] shadow-sm`;
+
+            // Column Header
+            const header = document.createElement("div");
+            header.className = "flex justify-between items-center border-b border-slate-100 pb-2";
+            header.innerHTML = `
+                <div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">${weekdays[i]}요일</span>
+                    <h4 class="text-base font-extrabold text-slate-800">${currentDayDate.getDate()}일</h4>
+                </div>
+            `;
+            if (isToday) {
+                header.innerHTML += `<span class="bg-indigo-600 text-white text-[9px] px-2 py-0.5 rounded font-bold">오늘</span>`;
+            } else if (isSelected) {
+                header.innerHTML += `<span class="bg-slate-700 text-white text-[9px] px-2 py-0.5 rounded font-bold">선택</span>`;
+            }
+            column.appendChild(header);
+
+            // Button to quick add in weekly day
+            const addBtn = document.createElement("button");
+            addBtn.onclick = () => openAddModal(null, dateStr);
+            addBtn.className = "w-full py-1 text-center border border-dashed border-slate-200 hover:border-indigo-400 text-slate-400 hover:text-indigo-600 text-xs rounded-xl font-medium transition-all";
+            addBtn.innerHTML = `<i class="fa-solid fa-plus mr-1"></i> 일정 추가`;
+            column.appendChild(addBtn);
+
+            // Event List for this week day
+            const eventList = document.createElement("div");
+            eventList.className = "flex flex-col gap-2.5 overflow-y-auto flex-1 max-h-[400px]";
+
+            const dayEvents = events.filter(e => {
+                if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
+                return e.date === dateStr;
+            }).sort((a, b) => a.start.localeCompare(b.start));
+
+            if (dayEvents.length === 0) {
+                eventList.innerHTML = `<div class="text-slate-300 italic text-center py-8 text-xs">일정이 없습니다.</div>`;
+            } else {
+                dayEvents.forEach(ev => {
+                    const card = document.createElement("div");
+                    let unitBg = "bg-slate-50 border-slate-200 text-slate-700";
+                    let unitDot = "bg-slate-400";
+                    if (ev.unit === "복지시설도우미") { unitBg = "bg-blue-50/60 border-blue-100 text-blue-950"; unitDot = "bg-blue-500"; }
+                    else if (ev.unit === "청결케어서비스") { unitBg = "bg-emerald-50/60 border-emerald-100 text-emerald-950"; unitDot = "bg-emerald-500"; }
+                    else if (ev.unit === "손길나눔공방") { unitBg = "bg-orange-50/60 border-orange-100 text-orange-950"; unitDot = "bg-orange-500"; }
+                    else if (ev.unit === "공통행정") { unitBg = "bg-purple-50/60 border-purple-100 text-purple-950"; unitDot = "bg-purple-500"; }
+                    else if (ev.unit === "개인교육") { unitBg = "bg-rose-50/60 border-rose-100 text-rose-950"; unitDot = "bg-rose-500"; }
+
+                    card.className = `p-3 rounded-xl border ${unitBg} cursor-pointer hover:shadow-md transition-all flex flex-col gap-1.5`;
+                    card.onclick = () => openEditModal(ev);
                     card.innerHTML = `
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-bold">[${e.start}~${e.end || ''}]</span>
-                            <span class="text-[9px] px-1 bg-white/80 rounded">${e.status}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full ${unitDot}"></span>
+                            <span class="text-[10px] font-bold opacity-75">${ev.unit}</span>
                         </div>
-                        <p class="truncate text-slate-800">${e.title}</p>
+                        <h5 class="text-xs font-bold truncate">${ev.title}</h5>
+                        <div class="flex justify-between items-center text-[9px] font-semibold opacity-80">
+                            <span><i class="fa-regular fa-clock mr-1"></i> ${ev.start}${ev.end ? ' ~ ' + ev.end : ''}</span>
+                            ${ev.location ? `<span class="truncate max-w-[100px]"><i class="fa-solid fa-location-dot mr-1"></i> ${ev.location}</span>` : ''}
+                        </div>
                     `;
-                    card.onclick = () => openEditModal(e);
-                    list.appendChild(card);
+                    eventList.appendChild(card);
                 });
             }
+
+            column.appendChild(eventList);
+            grid.appendChild(column);
         }
     }
 
-    // 5.3. Daily Timeline Drawing Engine
-    function renderDailyView() {
-        document.getElementById('dailyDateTitle').textContent = `${currentSelectedDate} 시간별 일정 동선`;
-        const timeline = document.getElementById('dailyTimeline');
-        timeline.innerHTML = '';
+    // 3. DAILY VIEW & TIMELINE
+    function renderDailyTimeline() {
+        const container = document.getElementById("dailyTimeline");
+        container.innerHTML = "";
 
-        const activeDayEvents = getFilteredEvents().filter(e => e.date === currentSelectedDate);
-        document.getElementById('dailyTotalCount').textContent = `일정 ${activeDayEvents.length}건`;
+        const dayEvents = events.filter(e => {
+            if (selectedUnitFilter && e.unit !== selectedUnitFilter) return false;
+            return e.date === selectedDateStr;
+        }).sort((a, b) => a.start.localeCompare(b.start));
 
-        if(activeDayEvents.length === 0) {
-            timeline.innerHTML = `
-                <div class="text-center py-12 text-slate-400 italic text-xs">
-                    지정된 일정이 없습니다. 우측 상단 '새 일정 등록하기'를 통해 첫 작업을 등록해보세요.
-                </div>
-            `;
-        } else {
-            // Sort by start hours
-            activeDayEvents.sort((a, b) => a.start.localeCompare(b.start));
-            
-            activeDayEvents.forEach(e => {
-                const item = document.createElement('div');
-                item.className = "flex gap-4 border-l-2 border-indigo-100 pl-4 relative py-2";
-                item.innerHTML = `
-                    <div class="absolute -left-[5px] top-4 w-2.5 h-2.5 rounded-full bg-indigo-600"></div>
-                    <div class="text-xs text-slate-400 font-bold pt-1 w-20 shrink-0">${e.start} ~ ${e.end || ''}</div>
-                    <div class="flex-1 bg-slate-50 border border-slate-100 p-3 rounded-xl hover:shadow-md cursor-pointer transition-all flex flex-col gap-1.5" onclick="openEditModalById('${e.id}')">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded-full">${e.unit}</span>
-                            <span class="text-[10px] ${e.status === '완료' ? 'text-emerald-600 bg-emerald-50' : 'text-orange-600 bg-orange-50'} font-bold px-2 py-0.5 rounded-full">${e.status}</span>
-                        </div>
-                        <h4 class="font-bold text-sm text-slate-800">${e.title}</h4>
-                        <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500">
-                            <span><i class="fa-solid fa-location-dot mr-1"></i>${e.location || '복지관 내'}</span>
-                            <span><i class="fa-solid fa-users mr-1"></i>${e.target || '대상 한정 없음'}</span>
-                        </div>
-                        ${e.notes ? `<p class="text-xs text-slate-400 border-t border-slate-100/50 pt-1.5 mt-1">비고: ${e.notes}</p>` : ''}
-                    </div>
-                `;
-                timeline.appendChild(item);
-            });
-        }
+        document.getElementById("dailyTotalCount").innerText = `일정 ${dayEvents.length}건`;
 
-        renderChecklist();
-        renderIncidentLog();
-    }
-
-    // Checklist drawing
-    function renderChecklist() {
-        const list = document.getElementById('dailyChecklist');
-        list.innerHTML = '';
-        const dayChecklist = checklists.filter(c => c.date === currentSelectedDate);
-
-        if(dayChecklist.length === 0) {
-            list.innerHTML = `<li class="text-[11px] text-slate-400 italic text-center py-4">체크사항이 없습니다. '추가' 버튼을 클릭해 등록해보세요.</li>`;
-        } else {
-            dayChecklist.forEach(c => {
-                const li = document.createElement('li');
-                li.className = "flex items-center gap-3 bg-slate-50 border border-slate-100 p-2.5 rounded-xl text-xs";
-                li.innerHTML = `
-                    <input type="checkbox" ${c.checked ? 'checked' : ''} onchange="toggleChecklist('${c.id}')" class="w-4 h-4 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
-                    <span class="flex-1 ${c.checked ? 'line-through text-slate-400' : 'text-slate-700 font-medium'}">${c.text}</span>
-                    <button onclick="deleteChecklist('${c.id}')" class="text-slate-300 hover:text-red-500"><i class="fa-solid fa-trash-can text-[10px]"></i></button>
-                `;
-                list.appendChild(li);
-            });
-        }
-    }
-
-    function toggleChecklist(id) {
-        const target = checklists.find(c => c.id === id);
-        if(target) {
-            target.checked = !target.checked;
-            renderChecklist();
-        }
-    }
-
-    function addChecklistItem() {
-        const text = prompt("새로운 일일 체크 항목을 작성해주세요:");
-        if (text && text.trim() !== '') {
-            checklists.push({
-                id: 'chk-' + Date.now(),
-                date: currentSelectedDate,
-                text: text,
-                checked: false
-            });
-            renderChecklist();
-        }
-    }
-
-    // Delete Checklist Helper
-    function deleteChecklist(id) {
-        checklists = checklists.filter(c => c.id !== id);
-        renderChecklist();
-    }
-
-    // Incident Log drawing
-    function renderIncidentLog() {
-        const container = document.getElementById('incidentLogContainer');
-        container.innerHTML = '';
-
-        if(incidents.length === 0) {
+        if (dayEvents.length === 0) {
             container.innerHTML = `
-                <div class="text-[11px] text-slate-400 italic text-center py-6">
-                    오늘 접수된 돌발 특이사항 내역이 없습니다.
+                <div class="text-center py-16">
+                    <div class="bg-indigo-50 text-indigo-400 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fa-solid fa-calendar-xmark text-lg"></i>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-500">지정된 날짜에 수립된 동선 일정이 없습니다.</p>
+                    <p class="text-xs text-slate-400 mt-1">상단의 '새 일정 등록하기'를 통해 어르신 점검 및 관리 업무를 기록해 보세요.</p>
                 </div>
             `;
-        } else {
-            incidents.forEach(inc => {
-                const box = document.createElement('div');
-                box.className = "bg-red-50 border border-red-100 p-3 rounded-xl flex flex-col gap-1.5 relative";
-                box.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <span class="text-[9px] font-bold text-red-700 bg-red-100 px-1.5 py-0.5 rounded">${inc.unit}</span>
-                        <span class="text-[9px] text-slate-400">${inc.time.replace('T', ' ')}</span>
+            return;
+        }
+
+        dayEvents.forEach(ev => {
+            const block = document.createElement("div");
+            let borderAccent = "border-l-slate-400";
+            let tagBg = "bg-slate-100 text-slate-600";
+            if (ev.unit === "복지시설도우미") { borderAccent = "border-l-blue-500"; tagBg = "bg-blue-100 text-blue-800"; }
+            else if (ev.unit === "청결케어서비스") { borderAccent = "border-l-emerald-500"; tagBg = "bg-emerald-100 text-emerald-800"; }
+            else if (ev.unit === "손길나눔공방") { borderAccent = "border-l-orange-500"; tagBg = "bg-orange-100 text-orange-800"; }
+            else if (ev.unit === "공통행정") { borderAccent = "border-l-purple-500"; tagBg = "bg-purple-100 text-purple-800"; }
+            else if (ev.unit === "개인교육") { borderAccent = "border-l-rose-500"; tagBg = "bg-rose-100 text-rose-800"; }
+
+            block.className = `flex gap-4 items-start p-4 rounded-xl border border-slate-100 bg-white shadow-sm border-l-4 ${borderAccent} hover:shadow-md transition-all cursor-pointer`;
+            block.onclick = () => openEditModal(ev);
+
+            block.innerHTML = `
+                <div class="shrink-0 text-right w-16">
+                    <span class="block text-sm font-extrabold text-slate-800">${ev.start}</span>
+                    <span class="text-[10px] text-slate-400 font-medium">${ev.end ? ev.end : '계획'}</span>
+                </div>
+                <div class="flex-1">
+                    <div class="flex flex-wrap items-center gap-2 mb-1">
+                        <span class="text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${tagBg}">${ev.unit}</span>
+                        <span class="text-[10px] bg-slate-50 text-slate-500 border border-slate-100 px-2 py-0.5 rounded-full font-semibold"><i class="fa-solid fa-tag mr-1"></i>${translateEventType(ev.type)}</span>
                     </div>
-                    <p class="text-xs text-slate-700 leading-relaxed font-semibold">${inc.text}</p>
-                    <button onclick="deleteIncident('${inc.id}')" class="absolute right-3 bottom-2 text-slate-400 hover:text-red-600"><i class="fa-solid fa-trash text-[10px]"></i></button>
-                `;
-                container.appendChild(box);
-            });
+                    <h5 class="font-bold text-slate-800 text-sm">${ev.title}</h5>
+                    ${ev.location || ev.target || ev.description ? `
+                        <div class="flex flex-col gap-1 mt-2 text-xs text-slate-500 font-medium border-t border-slate-50 pt-2">
+                            ${ev.location ? `<span><i class="fa-solid fa-map-location-dot text-indigo-500 mr-1.5 w-3.5"></i><b>활동처:</b> ${ev.location}</span>` : ''}
+                            ${ev.target ? `<span><i class="fa-solid fa-users text-indigo-500 mr-1.5 w-3.5"></i><b>참여대상:</b> ${ev.target}</span>` : ''}
+                            ${ev.description ? `<span><i class="fa-solid fa-align-left text-slate-400 mr-1.5 w-3.5"></i>${ev.description}</span>` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            container.appendChild(block);
+        });
+    }
+
+    function translateEventType(type) {
+        switch (type) {
+            case 'work': return '운영/점검';
+            case 'admin': return '행정업무';
+            case 'edu_personal': return '개인교육';
+            case 'edu_business': return '참여자교육';
+            case 'meeting': return '회의/간담회';
+            default: return '일반';
         }
     }
 
-    // 5.4. Education & Administrative Deadlines Drawing Engine
-    function renderAdminEduView() {
-        // Toggle Sub-Tabs visual styles
-        const tabBus = document.getElementById('edu-tab-business');
-        const tabPers = document.getElementById('edu-tab-personal');
-        if (activeEduTab === 'business') {
-            tabBus.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center bg-white text-rose-600 shadow-sm";
-            tabPers.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-500 hover:text-slate-800 hover:bg-slate-50/50";
-        } else {
-            tabBus.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center text-slate-500 hover:text-slate-800 hover:bg-slate-50/50";
-            tabPers.className = "flex-1 py-2 text-xs font-bold rounded-lg transition-all text-center bg-white text-indigo-600 shadow-sm";
+    // Daily Checklist System
+    function renderChecklist() {
+        const ul = document.getElementById("dailyChecklist");
+        ul.innerHTML = "";
+
+        const dayChecklist = checklist.filter(item => item.date === selectedDateStr);
+
+        if (dayChecklist.length === 0) {
+            ul.innerHTML = `
+                <div class="text-center py-6 text-slate-400 italic text-xs">
+                    오늘 수립된 체크리스트 작업이 없습니다.
+                </div>
+            `;
+            return;
         }
 
-        // Render Education List
-        const eduContainer = document.getElementById('educationListContainer');
-        eduContainer.innerHTML = '';
+        dayChecklist.forEach(item => {
+            const li = document.createElement("li");
+            li.className = "flex items-center justify-between p-2.5 rounded-lg hover:bg-slate-50 transition-colors border border-slate-100 bg-slate-50/30";
+            
+            const left = document.createElement("div");
+            left.className = "flex items-center gap-2 flex-1 cursor-pointer";
+            left.onclick = () => toggleChecklistItem(item);
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = item.done;
+            checkbox.className = "rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4";
+            checkbox.onchange = (e) => {
+                e.stopPropagation();
+                toggleChecklistItem(item);
+            };
+
+            const textSpan = document.createElement("span");
+            textSpan.className = `text-xs font-semibold ${item.done ? 'line-through text-slate-400' : 'text-slate-700'}`;
+            textSpan.innerText = item.text;
+
+            left.appendChild(checkbox);
+            left.appendChild(textSpan);
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.onclick = () => deleteChecklistItem(item.id);
+            deleteBtn.className = "text-slate-400 hover:text-red-600 text-xs p-1 transition-colors";
+            deleteBtn.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
+
+            li.appendChild(left);
+            li.appendChild(deleteBtn);
+            ul.appendChild(li);
+        });
+    }
+
+    window.addChecklistItem = async function() {
+        const text = prompt("새로운 연계 체크리스트 작업을 입력해 주세요:");
+        if (!text || !text.trim()) return;
+
+        try {
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'checklist'), {
+                date: selectedDateStr,
+                text: text.trim(),
+                done: false
+            });
+        } catch (e) {
+            console.error("Checklist item creation failed", e);
+        }
+    };
+
+    window.toggleChecklistItem = async function(item) {
+        try {
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'checklist', item.id);
+            await updateDoc(docRef, { done: !item.done });
+        } catch (e) {
+            console.error("Checklist state switch failed", e);
+        }
+    };
+
+    window.deleteChecklistItem = async function(id) {
+        try {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'checklist', id));
+        } catch (e) {
+            console.error("Checklist delete failed", e);
+        }
+    };
+
+    // Emergency Incidents Management
+    function renderIncidents() {
+        const container = document.getElementById("incidentLogContainer");
+        container.innerHTML = "";
+
+        const list = incidents.sort((a, b) => b.date.localeCompare(a.date));
+
+        if (list.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-6 text-slate-400 italic text-xs">
+                    최근 보고된 비상상황 또는 특이사항 기록이 없습니다.
+                </div>
+            `;
+            return;
+        }
+
+        list.slice(0, 4).forEach(inc => {
+            const item = document.createElement("div");
+            item.className = "p-3 bg-red-50/50 rounded-xl border border-red-100 flex flex-col gap-1.5 relative";
+            item.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-[10px] font-extrabold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">${inc.type}</span>
+                    <span class="text-[10px] text-slate-400 font-bold">${inc.date}</span>
+                </div>
+                <p class="text-xs text-slate-700 font-medium leading-relaxed">${inc.text}</p>
+                <div class="flex justify-between items-center text-[10px] text-slate-400 font-bold mt-1 border-t border-red-100/50 pt-1">
+                    <span>${inc.unit}</span>
+                    <button onclick="deleteIncident('${inc.id}')" class="text-red-500 hover:underline">삭제</button>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    window.openIncidentModal = function() {
+        document.getElementById("incident-date").value = selectedDateStr;
+        document.getElementById("incident-text").value = "";
         
-        // Filter events list based on the active tab type
+        const modal = document.getElementById("incidentModal");
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+            modal.classList.remove("opacity-0");
+            modal.querySelector("div").classList.remove("scale-95");
+        }, 50);
+    };
+
+    window.closeIncidentModal = function() {
+        const modal = document.getElementById("incidentModal");
+        modal.classList.add("opacity-0");
+        modal.querySelector("div").classList.add("scale-95");
+        setTimeout(() => modal.classList.add("hidden"), 200);
+    };
+
+    window.saveIncident = async function(e) {
+        e.preventDefault();
+        const unit = document.getElementById("incident-unit").value;
+        const type = document.getElementById("incident-type").value;
+        const date = document.getElementById("incident-date").value;
+        const text = document.getElementById("incident-text").value;
+
+        try {
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'incidents'), {
+                unit, type, date, text
+            });
+            closeIncidentModal();
+        } catch (err) {
+            console.error("Failed to save incident", err);
+        }
+    };
+
+    window.deleteIncident = async function(id) {
+        if (!confirm("해당 사건/특이사항 기록을 대장에서 완전히 삭제하시겠습니까?")) return;
+        try {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'incidents', id));
+        } catch (err) {
+            console.error("Failed to delete incident", err);
+        }
+    };
+
+    // 4. EDUCATION & ADMINISTRATIVE SECTIONS
+    function renderEducationList() {
+        const container = document.getElementById("educationListContainer");
+        container.innerHTML = "";
+
+        // Filter events containing type 'edu_business' or 'edu_personal' depending on the subtab
         const targetType = activeEduTab === 'business' ? 'edu_business' : 'edu_personal';
-        const eduEvents = events.filter(e => e.type === targetType);
+        const eduEvents = events.filter(e => e.type === targetType).sort((a,b) => b.date.localeCompare(a.date));
 
         if (eduEvents.length === 0) {
-            const tabName = activeEduTab === 'business' ? '참여자 필수 안전/소양 교육' : '담당자 실무/출장 교육';
-            eduContainer.innerHTML = `
-                <div class="text-xs text-slate-400 italic py-12 text-center">
-                    등록된 ${tabName} 일정이 없습니다.<br>상단 '교육 일정 등록' 단추를 통해 일정을 등록해보세요.
+            container.innerHTML = `
+                <div class="text-center py-12 text-slate-400 italic text-xs">
+                    등록된 교육 일정이 존재하지 않습니다. 우측 상단의 '교육 일정 등록'을 사용하여 교육 결과 보고 기록을 보존하세요.
                 </div>
             `;
-        } else {
-            eduEvents.forEach(edu => {
-                const box = document.createElement('div');
-                box.className = "bg-slate-50 border border-slate-150 p-4 rounded-xl space-y-2 relative transition-all hover:shadow-sm";
-                
-                if (activeEduTab === 'business') {
-                    // Participant Education Layout (with target & completed ratio progress bar)
-                    const target = edu.eduTarget || 0;
-                    const completed = edu.eduCompleted || 0;
-                    const ratio = target > 0 ? Math.round((completed / target) * 100) : 0;
-
-                    box.innerHTML = `
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-full">${edu.unit}</span>
-                            <span class="text-[11px] text-slate-400">${edu.date} [${edu.start}]</span>
-                        </div>
-                        <h5 class="font-bold text-sm text-slate-800">${edu.title}</h5>
-                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-500">
-                            <div>참석 목표 대상: <strong class="text-slate-800">${completed}명</strong> / 전체 ${target}명</div>
-                            <div>교육 이수율: <strong class="text-indigo-600">${ratio}%</strong></div>
-                        </div>
-                        <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                            <div class="bg-indigo-600 h-full" style="width: ${Math.min(ratio, 100)}%"></div>
-                        </div>
-                        <div class="text-[11px] text-slate-400">비고: ${edu.notes || '없음'}</div>
-                        <div class="flex justify-end gap-2 pt-1">
-                            <button onclick="openEditModalById('${edu.id}')" class="text-xs font-bold text-indigo-600 hover:underline">상세 편집</button>
-                        </div>
-                    `;
-                } else {
-                    // Staff/Coordinator Education Layout
-                    box.innerHTML = `
-                        <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full">${edu.unit}</span>
-                            <span class="text-[11px] text-slate-400">${edu.date} [${edu.start} ~ ${edu.end || ''}]</span>
-                        </div>
-                        <h5 class="font-bold text-sm text-slate-800">${edu.title}</h5>
-                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-500">
-                            <div>교육 장소: <strong class="text-slate-700">${edu.location || '지정되지 않음'}</strong></div>
-                            <div>참석 대상: <strong class="text-slate-700">${edu.target || '지정되지 않음'}</strong></div>
-                        </div>
-                        <div class="text-[11px] text-slate-400">교육 세부 내용: ${edu.notes || '없음'}</div>
-                        <div class="flex justify-end gap-2 pt-1">
-                            <button onclick="openEditModalById('${edu.id}')" class="text-xs font-bold text-indigo-600 hover:underline">상세 편집</button>
-                        </div>
-                    `;
-                }
-                eduContainer.appendChild(box);
-            });
+            return;
         }
 
-        // Render Administrative Deadlines List
-        const dlList = document.getElementById('adminDeadlinesList');
-        dlList.innerHTML = '';
+        eduEvents.forEach(edu => {
+            const targetVal = parseInt(edu.targetCount) || 0;
+            const completedVal = parseInt(edu.completedCount) || 0;
+            const percentage = targetVal > 0 ? Math.round((completedVal / targetVal) * 100) : 0;
 
-        if(adminDeadlines.length === 0) {
-            dlList.innerHTML = `<div class="text-xs text-slate-400 italic py-6 text-center">등록된 연간 행정 마감 일정이 없습니다.</div>`;
-        } else {
-            adminDeadlines.forEach(dl => {
-                const today = new Date(); // Link directly with live system date
-                today.setHours(0, 0, 0, 0); // clear times
-                const targetDate = new Date(dl.date);
-                const diffTime = targetDate - today;
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const card = document.createElement("div");
+            card.className = "p-4 border border-slate-100 bg-white rounded-xl shadow-sm flex flex-col gap-3 relative hover:shadow-md transition-all";
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-[9px] bg-rose-50 text-rose-700 border border-rose-100 px-2 py-0.5 rounded font-bold uppercase">${edu.unit}</span>
+                        <h5 class="text-sm font-bold text-slate-800 mt-1 cursor-pointer hover:text-rose-600 transition-colors" onclick="openEditModal(${JSON.stringify(edu).replace(/"/g, '&quot;')})">${edu.title}</h5>
+                    </div>
+                    <span class="text-xs text-slate-400 font-bold">${edu.date}</span>
+                </div>
                 
-                let ddayBadge = '';
-                if(diffDays === 0) ddayBadge = `<span class="bg-red-600 text-white font-bold px-2 py-0.5 rounded text-[10px]">D-Day</span>`;
-                else if(diffDays < 0) ddayBadge = `<span class="bg-slate-400 text-white font-bold px-2 py-0.5 rounded text-[10px]">종료</span>`;
-                else ddayBadge = `<span class="bg-orange-500 text-white font-bold px-2 py-0.5 rounded text-[10px]">D-${diffDays}</span>`;
-
-                const item = document.createElement('div');
-                item.className = "flex justify-between items-center bg-slate-50 hover:bg-slate-100 p-3 rounded-xl border border-slate-200 transition-all";
-                item.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        ${ddayBadge}
-                        <div>
-                            <h6 class="text-xs font-bold text-slate-800">${dl.title}</h6>
-                            <span class="text-[10px] text-slate-400">기한: ${dl.date} ${dl.notes ? `| ${dl.notes}` : ''}</span>
+                ${targetVal > 0 ? `
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-[10px] font-bold text-slate-500">
+                            <span>교육 이수 비율: ${completedVal}명 / ${targetVal}명 목표</span>
+                            <span class="text-rose-600">${percentage}%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-1.5">
+                            <div class="bg-rose-500 h-1.5 rounded-full transition-all" style="width: ${Math.min(percentage, 100)}%"></div>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="editAdminDeadline('${dl.id}')" class="text-indigo-600 hover:text-indigo-800 text-xs font-bold px-2 py-1"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteAdminDeadline('${dl.id}')" class="text-slate-300 hover:text-red-600 text-xs font-bold px-1 py-1"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                `;
-                dlList.appendChild(item);
-            });
+                ` : `
+                    <div class="text-[10px] text-slate-400 italic">부가 이수율 정보가 지정되지 않았습니다.</div>
+                `}
+                
+                <div class="flex justify-between items-center text-[10px] text-slate-400 font-semibold border-t border-slate-50 pt-2">
+                    <span><i class="fa-solid fa-location-dot mr-1"></i> 장소: ${edu.location || '복지관 내'}</span>
+                    <button onclick="openEditModal(${JSON.stringify(edu).replace(/"/g, '&quot;')})" class="text-rose-600 font-bold hover:underline">상세 및 편집</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Common Annual Administration Deadlines
+    function renderAdminDeadlines() {
+        const container = document.getElementById("adminDeadlinesList");
+        container.innerHTML = "";
+
+        if (adminDeadlines.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-8 text-slate-400 italic text-xs">
+                    등록된 연간 마감 행정 과업이 없습니다.
+                </div>
+            `;
+            return;
         }
+
+        const sorted = adminDeadlines.sort((a, b) => a.date.localeCompare(b.date));
+
+        sorted.forEach(dl => {
+            const today = new Date("2026-06-08");
+            const target = new Date(dl.date);
+            const diffTime = target - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            let ddayBadge = "";
+            let ddayBg = "bg-slate-100 text-slate-700";
+
+            if (diffDays === 0) {
+                ddayBadge = "D-Day";
+                ddayBg = "bg-red-500 text-white animate-bounce";
+            } else if (diffDays > 0) {
+                ddayBadge = `D-${diffDays}`;
+                ddayBg = diffDays <= 7 ? "bg-orange-500 text-white" : "bg-indigo-600 text-white";
+            } else {
+                ddayBadge = `완료/경과`;
+                ddayBg = "bg-slate-200 text-slate-500";
+            }
+
+            let priorityTag = "";
+            if (dl.priority === "high") priorityTag = `<span class="text-[9px] bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded font-extrabold">긴급</span>`;
+            else if (dl.priority === "normal") priorityTag = `<span class="text-[9px] bg-purple-50 text-purple-600 border border-purple-200 px-2 py-0.5 rounded font-extrabold">보통</span>`;
+
+            const item = document.createElement("div");
+            item.className = "flex justify-between items-center p-3 border border-slate-100 bg-slate-50/40 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer select-none";
+            item.ondblclick = () => openEditAdminDeadlineModal(dl);
+            item.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold px-2 py-1 rounded-lg ${ddayBg}">${ddayBadge}</span>
+                    <div>
+                        <h6 class="text-xs font-extrabold text-slate-700">${dl.title}</h6>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-[10px] text-slate-400 font-bold"><i class="fa-regular fa-calendar-check mr-1"></i>기한: ${dl.date}</span>
+                            ${priorityTag}
+                        </div>
+                    </div>
+                </div>
+                <button onclick="openEditAdminDeadlineModal(${JSON.stringify(dl).replace(/"/g, '&quot;')})" class="text-slate-400 hover:text-indigo-600 p-1.5"><i class="fa-solid fa-pen-to-square text-xs"></i></button>
+            `;
+            container.appendChild(item);
+        });
     }
 
-    function switchEduTab(tabName) {
-        activeEduTab = tabName;
-        renderAdminEduView();
+    // Sidebar D-day injection
+    function renderSidebarDdays() {
+        const container = document.getElementById("sidebar-dday-list");
+        container.innerHTML = "";
+
+        const upcoming = adminDeadlines.filter(dl => {
+            const diff = new Date(dl.date) - new Date("2026-06-08");
+            return diff >= 0;
+        }).sort((a,b) => a.date.localeCompare(b.date)).slice(0, 2);
+
+        if (upcoming.length === 0) {
+            container.innerHTML = `<span class="text-[10px] text-slate-400 italic block text-center">진행 중인 행정마감이 없습니다.</span>`;
+            return;
+        }
+
+        upcoming.forEach(dl => {
+            const diffDays = Math.ceil((new Date(dl.date) - new Date("2026-06-08")) / (1000 * 60 * 60 * 24));
+            const ddayLabel = diffDays === 0 ? "D-Day" : `D-${diffDays}`;
+
+            const item = document.createElement("div");
+            item.className = "flex justify-between items-center border-b border-indigo-100/50 pb-1.5 last:border-none last:pb-0";
+            item.innerHTML = `
+                <span class="truncate font-medium pr-2 block max-w-[120px]">${dl.title}</span>
+                <span class="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-black">${ddayLabel}</span>
+            `;
+            container.appendChild(item);
+        });
     }
 
-    // 5.5. Refined Budget View Drawing Engine
+    // 5. BUDGET VIEW CONTROLS & MANAGEMENT
     function renderBudgetView() {
-        document.getElementById('unit-budget-title').textContent = `${activeBudgetUnit} 품목별 예산 실계 조율 현황`;
-        
-        // Tab buttons styling
-        document.querySelectorAll('.budget-tab-btn').forEach(btn => {
+        document.getElementById("unit-budget-title").innerText = `[${activeBudgetTab}] 사업단 품목별 상세 예산`;
+
+        // Direct values
+        const totalAllocated = unitAllocBudget[activeBudgetTab] || 0;
+        document.getElementById("unit-budget-sum").innerText = `₩${totalAllocated.toLocaleString()}`;
+
+        // Aggregate used total
+        const activeItems = budgetItems.filter(item => item.unit === activeBudgetTab);
+        const totalUsed = activeItems.reduce((acc, curr) => acc + (parseInt(curr.used) || 0), 0);
+        document.getElementById("unit-used-sum").innerText = `₩${totalUsed.toLocaleString()}`;
+
+        const remaining = totalAllocated - totalUsed;
+        const remainDisplay = document.getElementById("unit-remaining-sum");
+        remainDisplay.innerText = `₩${remaining.toLocaleString()}`;
+        if (remaining < 0) {
+            remainDisplay.className = "text-lg font-bold text-red-600";
+        } else {
+            remainDisplay.className = "text-lg font-bold text-emerald-600";
+        }
+
+        // Percentage tracking
+        const ratio = totalAllocated > 0 ? Math.round((totalUsed / totalAllocated) * 100) : 0;
+        document.getElementById("unit-ratio-text").innerText = `${ratio}%`;
+        const bar = document.getElementById("unit-ratio-bar");
+        bar.style.width = `${Math.min(ratio, 100)}%`;
+
+        if (ratio > 100) {
+            bar.className = "bg-red-600 h-2 rounded-full";
+        } else {
+            bar.className = "bg-indigo-600 h-2 rounded-full";
+        }
+
+        // Table injection
+        const tbody = document.getElementById("budgetItemsTableBody");
+        const noData = document.getElementById("budgetNoData");
+        tbody.innerHTML = "";
+
+        if (activeItems.length === 0) {
+            noData.classList.remove("hidden");
+            return;
+        }
+        noData.classList.add("hidden");
+
+        activeItems.forEach(item => {
+            const alloc = parseInt(item.allocated) || 0;
+            const usd = parseInt(item.used) || 0;
+            const diff = alloc - usd;
+            const pct = alloc > 0 ? Math.round((usd / alloc) * 100) : 0;
+
+            const tr = document.createElement("tr");
+            tr.className = "hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-none";
+            tr.innerHTML = `
+                <td class="py-3 px-4 font-bold text-slate-800 text-xs">${item.title}</td>
+                <td class="py-3 px-4 text-right text-slate-600 text-xs font-semibold">₩${alloc.toLocaleString()}</td>
+                <td class="py-3 px-4 text-right text-orange-600 text-xs font-semibold">₩${usd.toLocaleString()}</td>
+                <td class="py-3 px-4 text-right ${diff < 0 ? 'text-red-600 font-extrabold' : 'text-slate-600'} text-xs font-semibold">₩${diff.toLocaleString()}</td>
+                <td class="py-3 px-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-16 bg-slate-100 rounded-full h-1.5 shrink-0">
+                            <div class="h-1.5 rounded-full ${pct > 100 ? 'bg-red-500' : 'bg-indigo-600'}" style="width: ${Math.min(pct, 100)}%"></div>
+                        </div>
+                        <span class="text-[10px] font-bold ${pct > 100 ? 'text-red-500' : 'text-slate-500'}">${pct}%</span>
+                    </div>
+                </td>
+                <td class="py-3 px-4 text-center">
+                    <button onclick='openEditBudgetModal(${JSON.stringify(item).replace(/'/g, "&#39;")})' class="text-indigo-600 hover:text-indigo-800 text-xs font-bold">수정</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    window.editUnitAllocatedBudget = async function() {
+        const currentAlloc = unitAllocBudget[activeBudgetTab] || 0;
+        const val = prompt(`[${activeBudgetTab}] 사업단의 연간 전체 배정 예산액을 원화 단위로 수정해 주세요 (숫자만 입력):`, currentAlloc);
+        if (val === null) return;
+
+        const parsed = parseInt(val);
+        if (isNaN(parsed) || parsed < 0) {
+            alert("유효한 정수 금액을 입력해야 합니다.");
+            return;
+        }
+
+        unitAllocBudget[activeBudgetTab] = parsed;
+        try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'global'), {
+                unitAllocBudget
+            }, { merge: true });
+        } catch (err) {
+            console.error("Budget allocation save failed", err);
+        }
+    };
+
+    // SWITCH TABS & SUB-TABS INTERFACES
+    window.switchView = function(view) {
+        activeView = view;
+        document.querySelectorAll(".nav-btn").forEach(btn => {
+            btn.classList.remove("active", "text-indigo-600", "bg-indigo-50");
+            btn.classList.add("text-slate-600");
+        });
+
+        const activeBtn = document.getElementById(`btn-view-${view}`);
+        if (activeBtn) {
+            activeBtn.classList.add("active", "text-indigo-600", "bg-indigo-50");
+            activeBtn.classList.remove("text-slate-600");
+        }
+
+        // Hide all views, display targeted
+        document.querySelectorAll(".view-section").forEach(sec => sec.classList.add("hidden"));
+        document.getElementById(`view-section-${view}`).classList.remove("hidden");
+
+        renderAll();
+    };
+
+    window.switchEduTab = function(tab) {
+        activeEduTab = tab;
+        document.getElementById("edu-tab-business").className = tab === 'business' 
+            ? "flex-1 py-2 text-xs font-bold rounded-lg bg-white text-rose-600 shadow-sm transition-all text-center" 
+            : "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all text-center";
+
+        document.getElementById("edu-tab-personal").className = tab === 'personal' 
+            ? "flex-1 py-2 text-xs font-bold rounded-lg bg-white text-rose-600 shadow-sm transition-all text-center" 
+            : "flex-1 py-2 text-xs font-bold rounded-lg text-slate-500 hover:text-slate-800 transition-all text-center";
+
+        renderEducationList();
+    };
+
+    window.switchBudgetTab = function(unit) {
+        activeBudgetTab = unit;
+        document.querySelectorAll(".budget-tab-btn").forEach(btn => {
             btn.className = "budget-tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-slate-50 text-slate-600 hover:bg-slate-100 transition-all";
         });
-        const currentTab = document.getElementById(`budget-tab-${activeBudgetUnit}`);
-        if(currentTab) {
-            currentTab.className = "budget-tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white transition-all";
+
+        const activeBtn = document.getElementById(`budget-tab-${unit}`);
+        if (activeBtn) {
+            activeBtn.className = "budget-tab-btn flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white transition-all";
         }
-
-        // Calculation variables
-        const limitTotal = unitBudgetTotals[activeBudgetUnit] || 0;
-        const items = budgetItems.filter(b => b.unit === activeBudgetUnit);
-        
-        let usedSum = 0;
-        items.forEach(item => usedSum += item.used);
-        
-        const remaining = limitTotal - usedSum;
-        const ratio = limitTotal > 0 ? Math.round((usedSum / limitTotal) * 100) : 0;
-
-        // Populate metric cards
-        document.getElementById('unit-budget-sum').textContent = `₩${limitTotal.toLocaleString()}`;
-        document.getElementById('unit-used-sum').textContent = `₩${usedSum.toLocaleString()}`;
-        document.getElementById('unit-remaining-sum').textContent = `₩${remaining.toLocaleString()}`;
-        document.getElementById('unit-ratio-text').textContent = `${ratio}%`;
-        document.getElementById('unit-ratio-bar').style.width = `${Math.min(ratio, 100)}%`;
-
-        // Highlight bar color if ratio is critical (over 90%)
-        const barElement = document.getElementById('unit-ratio-bar');
-        if (ratio >= 100) {
-            barElement.className = "bg-rose-600 h-2 rounded-full";
-        } else if (ratio >= 85) {
-            barElement.className = "bg-amber-500 h-2 rounded-full";
-        } else {
-            barElement.className = "bg-indigo-600 h-2 rounded-full";
-        }
-
-        // Build items table
-        const tbody = document.getElementById('budgetItemsTableBody');
-        tbody.innerHTML = '';
-        const noData = document.getElementById('budgetNoData');
-
-        if(items.length === 0) {
-            noData.classList.remove('hidden');
-        } else {
-            noData.classList.add('hidden');
-            items.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50/50 text-xs";
-                const itemRatio = item.allocated > 0 ? Math.round((item.used / item.allocated) * 100) : 0;
-                
-                tr.innerHTML = `
-                    <td class="py-3 px-4 font-semibold text-slate-800">${item.name}</td>
-                    <td class="py-3 px-4 text-right font-medium">₩${item.allocated.toLocaleString()}</td>
-                    <td class="py-3 px-4 text-right font-medium text-orange-600">₩${item.used.toLocaleString()}</td>
-                    <td class="py-3 px-4 text-right font-medium text-slate-500">₩${(item.allocated - item.used).toLocaleString()}</td>
-                    <td class="py-3 px-4">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold">${itemRatio}%</span>
-                            <div class="w-12 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-emerald-500 h-full" style="width: ${Math.min(itemRatio, 100)}%"></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="py-3 px-4 text-center">
-                        <button onclick="openEditBudgetItemModal('${item.id}')" class="text-indigo-600 hover:text-indigo-900 font-bold mr-2"><i class="fa-solid fa-pen-to-square"></i> 편집</button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-    }
-
-    function switchBudgetTab(unitName) {
-        activeBudgetUnit = unitName;
         renderBudgetView();
-    }
+    };
 
-    // ----------------------------------------------------
-    // 6. Sidebar D-Day calculation Engine
-    // ----------------------------------------------------
-    function renderDDayList() {
-        const ddayContainer = document.getElementById('sidebar-dday-list');
-        ddayContainer.innerHTML = '';
-
-        const today = new Date(); // Link directly with live system date
-        today.setHours(0, 0, 0, 0); // Clear hour details for calculation accuracy
-
-        // Calculate and sort deadlines to find top 2
-        const computedList = adminDeadlines.map(dl => {
-            const target = new Date(dl.date);
-            const diffDays = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
-            return { ...dl, diffDays };
-        }).filter(dl => dl.diffDays >= 0);
-
-        // Sort ascending
-        computedList.sort((a, b) => a.diffDays - b.diffDays);
-
-        const sliced = computedList.slice(0, 2);
-
-        if(sliced.length === 0) {
-            ddayContainer.innerHTML = `<div class="text-[11px] text-slate-400 italic">임박 마감 일정 없음</div>`;
-        } else {
-            sliced.forEach(item => {
-                const box = document.createElement('div');
-                box.className = "flex justify-between items-center border-b border-indigo-100/50 pb-1.5 last:border-b-0 last:pb-0";
-                box.innerHTML = `
-                    <span class="font-bold text-slate-800 text-[11px] truncate w-32" title="${item.title}">${item.title}</span>
-                    <span class="bg-red-100 text-red-700 font-bold px-1.5 py-0.5 rounded text-[9px]">D-${item.diffDays}</span>
-                `;
-                ddayContainer.appendChild(box);
-            });
+    // PERIOD AND CALENDAR DATE CONTROLS
+    window.changePeriod = function(direction) {
+        currentMonth += direction;
+        if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        } else if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
         }
-    }
+        // Sync selected date with new month structure
+        const formatMonth = (currentMonth + 1).toString().padStart(2, '0');
+        selectedDateStr = `${currentYear}-${formatMonth}-08`;
+        renderAll();
+    };
 
-    // ----------------------------------------------------
-    // 7. Dialogue Modals Handlers
-    // ----------------------------------------------------
-    
-    // Schedule Event Modals
-    function openAddModal(type = 'work') {
-        document.getElementById('scheduleForm').reset();
-        document.getElementById('event-id').value = '';
-        document.getElementById('event-date').value = currentSelectedDate;
-        document.getElementById('event-type').value = type;
-        document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-calendar-plus"></i> <span>새 일정 등록</span>';
-        document.getElementById('btn-delete-event').classList.add('hidden');
-        toggleEduDetailsVisibility();
+    window.setToday = function() {
+        currentYear = 2026;
+        currentMonth = 5; // June
+        selectedDateStr = "2026-06-08";
+        renderAll();
+    };
+
+    // UNIT FILTER LOGIC
+    window.setUnitFilter = function(unit) {
+        selectedUnitFilter = unit;
         
-        showModal('scheduleModal');
-    }
-
-    function openAddModalWithDate(targetDate) {
-        openAddModal();
-        document.getElementById('event-date').value = targetDate;
-    }
-
-    function openEditModal(eventObj) {
-        document.getElementById('event-id').value = eventObj.id;
-        document.getElementById('event-unit').value = eventObj.unit;
-        document.getElementById('event-type').value = eventObj.type;
-        document.getElementById('event-title').value = eventObj.title;
-        document.getElementById('event-date').value = eventObj.date;
-        document.getElementById('event-start').value = eventObj.start;
-        document.getElementById('event-end').value = eventObj.end || '';
-        document.getElementById('event-location').value = eventObj.location || '';
-        document.getElementById('event-target').value = eventObj.target || '';
-        document.getElementById('event-notes').value = eventObj.notes || '';
-        
-        // Radio logic
-        const statusValue = eventObj.status || '예정';
-        document.querySelectorAll('input[name="event-status"]').forEach(radio => {
-            radio.checked = radio.value === statusValue;
+        document.querySelectorAll(".unit-filter-btn").forEach(btn => {
+            btn.classList.remove("border-indigo-500", "bg-indigo-50/50", "text-indigo-900");
+            btn.classList.add("border-slate-100", "bg-white", "text-slate-700");
         });
 
-        // Edu Section
-        if (eventObj.type === 'edu_business') {
-            document.getElementById('edu-target-count').value = eventObj.eduTarget || '';
-            document.getElementById('edu-completed-count').value = eventObj.eduCompleted || '';
-        } else {
-            document.getElementById('edu-target-count').value = '';
-            document.getElementById('edu-completed-count').value = '';
+        const activeBtn = document.getElementById(`filter-btn-${unit}`);
+        if (activeBtn) {
+            activeBtn.classList.remove("border-slate-100", "bg-white", "text-slate-700");
+            activeBtn.classList.add("border-indigo-500", "bg-indigo-50/50", "text-indigo-900");
         }
 
-        document.getElementById('modalTitle').innerHTML = '<i class="fa-solid fa-calendar-minus"></i> <span>일정 수정</span>';
-        document.getElementById('btn-delete-event').classList.remove('hidden');
+        document.getElementById("filterStatusText").innerText = `필터: ${unit}`;
+        document.getElementById("clearFilterBtn").classList.remove("hidden");
+
+        renderAll();
+    };
+
+    window.resetUnitFilter = function() {
+        selectedUnitFilter = null;
+        document.querySelectorAll(".unit-filter-btn").forEach(btn => {
+            btn.classList.remove("border-indigo-500", "bg-indigo-50/50", "text-indigo-900");
+            btn.classList.add("border-slate-100", "bg-white", "text-slate-700");
+        });
+
+        document.getElementById("filterStatusText").innerText = "필터: 모든 사업단";
+        document.getElementById("clearFilterBtn").classList.add("hidden");
+
+        renderAll();
+    };
+
+    // WEATHER WIDGET MODAL / INLINE EDIT
+    window.editWeatherAlert = async function() {
+        const text = prompt("새로운 정읍시 실시간 일자리 기상/안전 알림 문구를 입력하세요:", weatherAlertText);
+        if (text === null) return;
+
+        try {
+            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'global'), {
+                weatherAlertText: text.trim()
+            }, { merge: true });
+        } catch (err) {
+            console.error("Failed to update global weather", err);
+        }
+    };
+
+    // SCHEDULE FORM WORKFLOW
+    window.openAddModal = function(forcedType = null, defaultDate = null) {
+        document.getElementById("scheduleForm").reset();
+        document.getElementById("event-id").value = "";
+        
+        // Assign defaults
+        document.getElementById("event-date").value = defaultDate || selectedDateStr;
+        document.getElementById("event-start").value = "09:00";
+        document.getElementById("event-end").value = "12:00";
+        
+        if (forcedType) {
+            document.getElementById("event-type").value = forcedType;
+        }
+
+        if (selectedUnitFilter) {
+            document.getElementById("event-unit").value = selectedUnitFilter;
+        }
+
+        document.getElementById("modalTitle").querySelector("span").innerText = "새 일정 등록";
+        document.getElementById("btn-delete-schedule").classList.add("hidden");
+
         toggleEduDetailsVisibility();
 
-        showModal('scheduleModal');
-    }
+        const modal = document.getElementById("scheduleModal");
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+            modal.classList.remove("opacity-0");
+            modal.querySelector("div").classList.remove("scale-95");
+        }, 50);
+    };
 
-    function openEditModalById(id) {
-        const found = events.find(e => e.id === id);
-        if(found) openEditModal(found);
-    }
-
-    // Close Modals
-    function closeScheduleModal() {
-        hideModal('scheduleModal');
-    }
-
-    function toggleEduDetailsVisibility() {
-        const selectedType = document.getElementById('event-type').value;
-        const details = document.getElementById('edu-details-section');
-        if (selectedType === 'edu_business') {
-            details.classList.remove('hidden');
-        } else {
-            details.classList.add('hidden');
-        }
-    }
-
-    function saveSchedule(e) {
-        e.preventDefault();
+    window.openEditModal = function(ev) {
+        document.getElementById("scheduleForm").reset();
+        document.getElementById("event-id").value = ev.id;
         
-        const id = document.getElementById('event-id').value;
-        const unit = document.getElementById('event-unit').value;
-        const type = document.getElementById('event-type').value;
-        const title = document.getElementById('event-title').value;
-        const date = document.getElementById('event-date').value;
-        const start = document.getElementById('event-start').value;
-        const end = document.getElementById('event-end').value;
-        const location = document.getElementById('event-location').value;
-        const target = document.getElementById('event-target').value;
-        const notes = document.getElementById('event-notes').value;
-        const status = document.querySelector('input[name="event-status"]:checked').value;
+        document.getElementById("event-unit").value = ev.unit;
+        document.getElementById("event-type").value = ev.type;
+        document.getElementById("event-title").value = ev.title;
+        document.getElementById("event-date").value = ev.date;
+        document.getElementById("event-start").value = ev.start;
+        document.getElementById("event-end").value = ev.end || "";
+        document.getElementById("event-location").value = ev.location || "";
+        document.getElementById("event-target").value = ev.target || "";
+        document.getElementById("event-description").value = ev.description || "";
 
-        const eventData = {
-            id: id || 'ev-' + Date.now(),
-            unit, type, title, date, start, end, location, target, notes, status
+        if (ev.targetCount) document.getElementById("edu-target-count").value = ev.targetCount;
+        if (ev.completedCount) document.getElementById("edu-completed-count").value = ev.completedCount;
+
+        document.getElementById("modalTitle").querySelector("span").innerText = "일정 편집 및 관리";
+        document.getElementById("btn-delete-schedule").classList.remove("hidden");
+
+        toggleEduDetailsVisibility();
+
+        const modal = document.getElementById("scheduleModal");
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+            modal.classList.remove("opacity-0");
+            modal.querySelector("div").classList.remove("scale-95");
+        }, 50);
+    };
+
+    window.closeScheduleModal = function() {
+        const modal = document.getElementById("scheduleModal");
+        modal.classList.add("opacity-0");
+        modal.querySelector("div").classList.add("scale-95");
+        setTimeout(() => modal.classList.add("hidden"), 200);
+    };
+
+    window.toggleEduDetailsVisibility = function() {
+        const type = document.getElementById("event-type").value;
+        const eduSection = document.getElementById("edu-details-section");
+        if (type === "edu_business" || type === "edu_personal") {
+            eduSection.classList.remove("hidden");
+        } else {
+            eduSection.classList.add("hidden");
+        }
+    };
+
+    window.saveSchedule = async function(e) {
+        e.preventDefault();
+        const id = document.getElementById("event-id").value;
+        
+        const payload = {
+            unit: document.getElementById("event-unit").value,
+            type: document.getElementById("event-type").value,
+            title: document.getElementById("event-title").value,
+            date: document.getElementById("event-date").value,
+            start: document.getElementById("event-start").value,
+            end: document.getElementById("event-end").value,
+            location: document.getElementById("event-location").value,
+            target: document.getElementById("event-target").value,
+            description: document.getElementById("event-description").value
         };
 
-        if (type === 'edu_business') {
-            eventData.eduTarget = parseInt(document.getElementById('edu-target-count').value) || 0;
-            eventData.eduCompleted = parseInt(document.getElementById('edu-completed-count').value) || 0;
+        if (payload.type === "edu_business" || payload.type === "edu_personal") {
+            payload.targetCount = parseInt(document.getElementById("edu-target-count").value) || 0;
+            payload.completedCount = parseInt(document.getElementById("edu-completed-count").value) || 0;
         }
 
-        if (id) {
-            const index = events.findIndex(e => e.id === id);
-            if (index !== -1) events[index] = eventData;
-        } else {
-            events.push(eventData);
-        }
-
-        closeScheduleModal();
-        renderAllViews();
-    }
-
-    function deleteSchedule() {
-        const id = document.getElementById('event-id').value;
-        if (id) {
-            triggerCustomConfirm("일정 삭제", "정말로 이 일정을 영구적으로 삭제하시겠습니까?", () => {
-                events = events.filter(e => e.id !== id);
-                closeScheduleModal();
-                renderAllViews();
-            });
-        }
-    }
-
-    // Weather Widget Modal
-    function editWeatherAlert() {
-        document.getElementById('weather-alert-input').value = weatherStatus.alertText;
-        document.getElementById('weather-status-select').value = weatherStatus.type;
-        showModal('weatherModal');
-    }
-
-    function closeWeatherModal() {
-        hideModal('weatherModal');
-    }
-
-    function saveWeatherAlert() {
-        const val = document.getElementById('weather-alert-input').value;
-        const type = document.getElementById('weather-status-select').value;
-        
-        weatherStatus.alertText = val;
-        weatherStatus.type = type;
-
-        const widget = document.getElementById('weatherAlert');
-        const dot = document.getElementById('weatherStatusDot');
-        const text = document.getElementById('weatherAlertText');
-
-        text.textContent = val;
-
-        // Class toggling
-        dot.className = "inline-flex h-2 w-2 rounded-full animate-pulse ";
-        widget.className = "px-4 py-1.5 rounded-lg border text-xs flex items-center gap-2 ";
-
-        if (type === 'safe') {
-            dot.className += "bg-emerald-400";
-            widget.className += "bg-indigo-800/80 border-indigo-700 text-indigo-100";
-        } else if (type === 'caution') {
-            dot.className += "bg-amber-400";
-            widget.className += "bg-amber-900/80 border-amber-700 text-amber-100";
-        } else {
-            dot.className += "bg-rose-500";
-            widget.className += "bg-rose-950 border-rose-800 text-rose-100";
-        }
-
-        closeWeatherModal();
-    }
-
-    // Incident Modal
-    function openIncidentModal() {
-        document.getElementById('incidentForm').reset();
-        document.getElementById('incident-time').value = new Date().toISOString().substring(0, 16);
-        showModal('incidentModal');
-    }
-
-    function closeIncidentModal() {
-        hideModal('incidentModal');
-    }
-
-    function saveIncident(e) {
-        e.preventDefault();
-        const unit = document.getElementById('incident-unit').value;
-        const time = document.getElementById('incident-time').value;
-        const text = document.getElementById('incident-text').value;
-
-        incidents.push({
-            id: 'inc-' + Date.now(),
-            unit, time, text
-        });
-
-        closeIncidentModal();
-        renderDailyView();
-    }
-
-    // Incident Log Delete
-    function deleteIncident(id) {
-        triggerCustomConfirm("돌발 보고 삭제", "기록 대장에서 이 특이사항을 삭제하시겠습니까?", () => {
-            incidents = incidents.filter(i => i.id !== id);
-            renderDailyView();
-        });
-    }
-
-    // Admin Deadline Modal
-    function openAdminDeadlineModal() {
-        document.getElementById('adminDeadlineForm').reset();
-        document.getElementById('admin-deadline-id').value = '';
-        showModal('adminDeadlineModal');
-    }
-
-    function closeAdminDeadlineModal() {
-        hideModal('adminDeadlineModal');
-    }
-
-    function saveAdminDeadline(e) {
-        e.preventDefault();
-        const id = document.getElementById('admin-deadline-id').value;
-        const title = document.getElementById('admin-deadline-title').value;
-        const date = document.getElementById('admin-deadline-date').value;
-        const notes = document.getElementById('admin-deadline-notes').value;
-
-        const dlData = { id: id || 'dl-' + Date.now(), title, date, notes };
-
-        if (id) {
-            const index = adminDeadlines.findIndex(dl => dl.id === id);
-            if (index !== -1) adminDeadlines[index] = dlData;
-        } else {
-            adminDeadlines.push(dlData);
-        }
-
-        closeAdminDeadlineModal();
-        renderAdminEduView();
-    }
-
-    function editAdminDeadline(id) {
-        const found = adminDeadlines.find(dl => dl.id === id);
-        if(found) {
-            document.getElementById('admin-deadline-id').value = found.id;
-            document.getElementById('admin-deadline-title').value = found.title;
-            document.getElementById('admin-deadline-date').value = found.date;
-            document.getElementById('admin-deadline-notes').value = found.notes || '';
-            showModal('adminDeadlineModal');
-        }
-    }
-
-    function deleteAdminDeadline(id) {
-        triggerCustomConfirm("행정 마감 삭제", "이 마감 일정을 대장에서 영구 삭제할까요?", () => {
-            adminDeadlines = adminDeadlines.filter(dl => dl.id !== id);
-            renderAdminEduView();
-        });
-    }
-
-    // Budget Item Modal
-    function openBudgetModalFromActiveTab() {
-        document.getElementById('budgetItemForm').reset();
-        document.getElementById('budget-item-id').value = '';
-        document.getElementById('budget-item-unit').value = activeBudgetUnit;
-        document.getElementById('budget-item-unit-display').value = activeBudgetUnit;
-        document.getElementById('btn-delete-budget-item').classList.add('hidden');
-        showModal('budgetItemModal');
-    }
-
-    function openEditBudgetItemModal(id) {
-        const found = budgetItems.find(b => b.id === id);
-        if (found) {
-            document.getElementById('budget-item-id').value = found.id;
-            document.getElementById('budget-item-unit').value = found.unit;
-            document.getElementById('budget-item-unit-display').value = found.unit;
-            document.getElementById('budget-item-name').value = found.name;
-            document.getElementById('budget-item-allocated').value = found.allocated;
-            document.getElementById('budget-item-used').value = found.used || 0;
-            
-            document.getElementById('btn-delete-budget-item').classList.remove('hidden');
-            showModal('budgetItemModal');
-        }
-    }
-
-    function closeBudgetItemModal() {
-        hideModal('budgetItemModal');
-    }
-
-    function saveBudgetItem(e) {
-        e.preventDefault();
-        const id = document.getElementById('budget-item-id').value;
-        const unit = document.getElementById('budget-item-unit').value;
-        const name = document.getElementById('budget-item-name').value;
-        const allocated = parseInt(document.getElementById('budget-item-allocated').value) || 0;
-        const used = parseInt(document.getElementById('budget-item-used').value) || 0;
-
-        const bData = { id: id || 'b-' + Date.now(), unit, name, allocated, used };
-
-        if (id) {
-            const index = budgetItems.findIndex(b => b.id === id);
-            if(index !== -1) budgetItems[index] = bData;
-        } else {
-            budgetItems.push(bData);
-        }
-
-        closeBudgetItemModal();
-        renderBudgetView();
-    }
-
-    // Delete Budget Item
-    function deleteBudgetItem() {
-        const id = document.getElementById('budget-item-id').value;
-        if (id) {
-            triggerCustomConfirm("예산 품목 삭제", "이 세부 품목 예산을 정산 목록에서 제외하시겠습니까?", () => {
-                budgetItems = budgetItems.filter(b => b.id !== id);
-                closeBudgetItemModal();
-                renderBudgetView();
-            });
-        }
-    }
-
-    // Annual Allocated Unit Total Modals
-    function editUnitAllocatedBudget() {
-        document.getElementById('unit-budget-target-unit').value = activeBudgetUnit;
-        document.getElementById('unit-budget-total-input').value = unitBudgetTotals[activeBudgetUnit] || 0;
-        showModal('unitBudgetTotalModal');
-    }
-
-    function closeUnitBudgetTotalModal() {
-        hideModal('unitBudgetTotalModal');
-    }
-
-    function saveUnitBudgetTotal() {
-        const val = parseInt(document.getElementById('unit-budget-total-input').value) || 0;
-        unitBudgetTotals[activeBudgetUnit] = val;
-        closeUnitBudgetTotalModal();
-        renderBudgetView();
-    }
-
-    // Generic Modal Animation Helpers
-    function showModal(id) {
-        const m = document.getElementById(id);
-        if (!m) return;
-        m.classList.remove('hidden');
-        setTimeout(() => {
-            m.classList.remove('opacity-0');
-            const transformElem = m.querySelector('.transform');
-            if (transformElem) {
-                transformElem.classList.remove('scale-95');
+        try {
+            const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'events');
+            if (id) {
+                await updateDoc(doc(collectionRef, id), payload);
+            } else {
+                await addDoc(collectionRef, payload);
             }
-        }, 10);
-    }
-
-    // Hide Modal Helper
-    function hideModal(id) {
-        const m = document.getElementById(id);
-        if (!m) return;
-        m.classList.add('opacity-0');
-        const transformElem = m.querySelector('.transform');
-        if (transformElem) {
-            transformElem.classList.add('scale-95');
+            closeScheduleModal();
+        } catch (err) {
+            console.error("Save schedule error", err);
         }
-        setTimeout(() => {
-            m.classList.add('hidden');
-        }, 200);
-    }
+    };
 
+    window.deleteSchedule = async function() {
+        const id = document.getElementById("event-id").value;
+        if (!id) return;
+        if (!confirm("정말로 이 복지사업 및 관리 일정을 데이터베이스에서 완전히 삭제할까요?")) return;
+
+        try {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'events', id));
+            closeScheduleModal();
+        } catch (err) {
+            console.error("Delete schedule error", err);
+        }
+    };
+
+    // BUDGET MODAL WORKFLOW
+    window.openBudgetModalFromActiveTab = function() {
+        document.getElementById("budgetForm").reset();
+        document.getElementById("budget-id").value = "";
+        document.getElementById("budget-unit").value = activeBudgetTab;
+        
+        document.getElementById("budgetModalTitle").innerText = `[${activeBudgetTab}] 새 예산 품목 추가`;
+        document.getElementById("btn-delete-budget").classList.add("hidden");
+
+        const modal = document.getElementById("budgetModal");
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+            modal.classList.remove("opacity-0");
+            modal.querySelector("div").classList.remove("scale-95");
+        }, 50);
+    };
+
+    window.openEditBudgetModal = function(item) {
+        document.getElementById("budgetForm").reset();
+        document.getElementById("budget-id").value = item.id;
+        document.getElementById("budget-unit").value = item.unit;
+        document.getElementById("budget-title").value = item.title;
+        document.getElementById("budget-allocated").value = item.allocated;
+        document.getElementById("budget-used").value = item.used;
+
+        document.getElementById("budgetModalTitle").innerText = `품목 예산 수정`;
+        document.getElementById("btn-delete-budget").classList.remove("hidden");
+
+        const modal = document.getElementById("budgetModal");
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+            modal.classList.remove("opacity-0");
+            modal.querySelector("div").classList.remove("scale-95");
+        }, 50);
+    };
+
+    window.closeBudgetModal = function() {
+        const modal = document.getElementById("budgetModal");
+        modal.classList.add("opacity-0");
+        modal.querySelector("div").classList.add("scale-95");
+        setTimeout(() => modal.classList.add("hidden"), 200);
+    };
+
+    window.saveBudgetItem = async function(e) {
+        e.preventDefault();
+        const id = document.getElementById("budget-id").value;
+        const payload = {
+            unit: document.getElementById("budget-unit").value,
+            title: document.getElementById("budget-title").value,
+            allocated: parseInt(document.getElementById("budget-allocated").value) || 0,
+            used: parseInt(document.getElementById("budget-used").value) || 0
+        };
+
+        try {
+            const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'budget_items');
+            if (id) {
+                await updateDoc(doc(collectionRef, id), payload);
+            } else {
+                await addDoc(collectionRef, payload);
+            }
+            closeBudgetModal();
+        } catch (err) {
+            console.error("Save budget item error", err);
+        }
+    };
+
+    window.deleteBudgetItem = async function() {
+        const id = document.getElementById("budget-id").value;
+        if (!id) return;
+        if (!confirm("해당 예산 품목 및 집행 정보 내역을 완전 삭제 처리할까요?")) return;
+
+        try {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'budget_items', id));
+            closeBudgetModal();
+        } catch (err) {
+            console.error("Delete budget item error", err);
+        }
+    };
+
+    // ADMIN DEADLINE MODAL WORKFLOW
+    window.openAdminDeadlineModal = function() {
+        document.getElementById("adminDeadlineForm").reset();
+        document.getElementById("deadline-id").value = "";
+        document.getElementById("deadline-date").value = selectedDateStr;
+        
+        document.getElementById("adminDeadlineModalTitle").innerText = "새 행정일정 과업 등록";
+        document.getElementById("btn-delete-deadline").classList.add("hidden");
+
+        const modal = document.getElementById("adminDeadlineModal");
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+            modal.classList.remove("opacity-0");
+            modal.querySelector("div").classList.remove("scale-95");
+        }, 50);
+    };
+
+    window.openEditAdminDeadlineModal = function(dl) {
+        document.getElementById("adminDeadlineForm").reset();
+        document.getElementById("deadline-id").value = dl.id;
+        document.getElementById("deadline-title").value = dl.title;
+        document.getElementById("deadline-date").value = dl.date;
+        document.getElementById("deadline-priority").value = dl.priority;
+
+        document.getElementById("adminDeadlineModalTitle").innerText = "행정일정 정보 편집";
+        document.getElementById("btn-delete-deadline").classList.remove("hidden");
+
+        const modal = document.getElementById("adminDeadlineModal");
+        modal.classList.remove("hidden");
+        setTimeout(() => {
+            modal.classList.remove("opacity-0");
+            modal.querySelector("div").classList.remove("scale-95");
+        }, 50);
+    };
+
+    window.closeAdminDeadlineModal = function() {
+        const modal = document.getElementById("adminDeadlineModal");
+        modal.classList.add("opacity-0");
+        modal.querySelector("div").classList.add("scale-95");
+        setTimeout(() => modal.classList.add("hidden"), 200);
+    };
+
+    window.saveAdminDeadline = async function(e) {
+        e.preventDefault();
+        const id = document.getElementById("deadline-id").value;
+        const payload = {
+            title: document.getElementById("deadline-title").value,
+            date: document.getElementById("deadline-date").value,
+            priority: document.getElementById("deadline-priority").value
+        };
+
+        try {
+            const collectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'admin_deadlines');
+            if (id) {
+                await updateDoc(doc(collectionRef, id), payload);
+            } else {
+                await addDoc(collectionRef, payload);
+            }
+            closeAdminDeadlineModal();
+        } catch (err) {
+            console.error("Save admin deadline error", err);
+        }
+    };
+
+    window.deleteAdminDeadline = async function() {
+        const id = document.getElementById("deadline-id").value;
+        if (!id) return;
+        if (!confirm("해당 법정/행정 일정 과업을 완전히 삭제하시겠습니까?")) return;
+
+        try {
+            await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'admin_deadlines', id));
+            closeAdminDeadlineModal();
+        } catch (err) {
+            console.error("Delete admin deadline error", err);
+        }
+    };
+
+    // DOM Ready execution fallback
+    window.onload = function() {
+        renderAll();
+    };
 </script>
 </body>
 </html>
